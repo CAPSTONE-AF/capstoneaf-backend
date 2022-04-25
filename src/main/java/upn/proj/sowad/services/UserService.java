@@ -16,7 +16,7 @@ import upn.proj.sowad.exception.domain.UsernameExistException;
 
 public interface UserService {
 
-    User register(String firstName, String lastName, String username, String email) throws UserNotFoundException, UsernameExistException, EmailExistException, MessagingException;
+    User register(String firstName, String lastName, String username, String email, String password) throws UserNotFoundException, UsernameExistException, EmailExistException, MessagingException;
 
     List<User> getUsers();
 
