@@ -2,6 +2,7 @@ package upn.proj.sowad.api.controllers;
 
 import static org.springframework.http.HttpStatus.OK;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.mail.MessagingException;
@@ -22,7 +23,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import upn.proj.sowad.entities.Curso;
 import upn.proj.sowad.entities.HttpResponse;
-import upn.proj.sowad.entities.User;
 import upn.proj.sowad.exception.domain.CursoExistsException;
 import upn.proj.sowad.exception.domain.CursoNotFoundException;
 import upn.proj.sowad.exception.domain.EmailExistException;
@@ -30,7 +30,6 @@ import upn.proj.sowad.exception.domain.UserNotFoundException;
 import upn.proj.sowad.exception.domain.UsernameExistException;
 import upn.proj.sowad.services.CursoService;
 
-@CrossOrigin("http://localhost:4200")
 @RestController
 @RequestMapping("/curso")
 public class CursoResource {
@@ -62,15 +61,19 @@ public class CursoResource {
 	    }
 	
 	@PostMapping("/add")
-    public ResponseEntity<Curso> addNewCurso(@RequestParam("nombre") String nombre) throws CursoNotFoundException, CursoExistsException {
-        Curso newCurso = cursoService.addNewCurso(nombre);
+    public ResponseEntity<Curso> addNewCurso(@RequestParam("nombre") String nombre,
+                                            @RequestParam("idUser")String idUser)
+                                            throws CursoNotFoundException, CursoExistsException {
+        Curso newCurso = cursoService.addNewCurso(nombre,idUser);
         return new ResponseEntity<>(newCurso, OK);
     }
 	
 	@PostMapping("/update")
     public ResponseEntity<Curso> update(@RequestParam("currentNombre") String currentNombre,
-                                       @RequestParam("nombre") String nombre) throws CursoNotFoundException, CursoExistsException {
-        Curso updatedCurso = cursoService.updateCurso(currentNombre, nombre);
+                                       @RequestParam("nombre") String nombre,
+                                       @RequestParam("idUser")String idUser)
+                                        throws CursoNotFoundException, CursoExistsException {
+        Curso updatedCurso = cursoService.updateCurso(currentNombre, nombre,idUser);
         return new ResponseEntity<>(updatedCurso, OK);
     }
 	

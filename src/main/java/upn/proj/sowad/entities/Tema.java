@@ -1,6 +1,7 @@
 package upn.proj.sowad.entities;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -27,6 +28,18 @@ public class Tema {
 	@Column(name="id_tema")
 	private Long idTema;
 	
+	@Column(name="usu_tema_modi")
+	private String usu_tema_modi;
+
+	@Column(name="usu_crear_tema")
+	private String usu_crear_tema;
+	
+	@Column(name="fec_tema_crear")
+	private Date fec_tema_crear;
+
+	@Column(name="fec_tema_modi")
+	private Date fec_tema_modi;
+
 	@Column(name="titulo")
 	private String titulo;
 	
@@ -60,6 +73,50 @@ public class Tema {
 		this.curso = curso;
 		this.recursos = new ArrayList<>();
 		this.avances = new ArrayList<>();
+		this.usu_crear_tema=usu_crear_tema;
+		this.fec_tema_crear=fec_tema_crear;
+		this.fec_tema_modi=fec_tema_modi;
+		this.usu_tema_modi=usu_tema_modi;
+	}
+
+	public String getUsu_tema_modi() {
+		return usu_tema_modi;
+	}
+
+	public void setUsu_tema_modi(String usu_tema_modi) {
+		this.usu_tema_modi = usu_tema_modi;
+	}
+
+	public String getUsu_crear_tema() {
+		return usu_crear_tema;
+	}
+
+	public void setUsu_crear_tema(String usu_crear_tema) {
+		this.usu_crear_tema = usu_crear_tema;
+	}
+
+	public Date getFec_tema_crear() {
+		return fec_tema_crear;
+	}
+
+	public void setFec_tema_crear(Date fec_tema_crear) {
+		this.fec_tema_crear = fec_tema_crear;
+	}
+
+	public Date getFec_tema_modi() {
+		return fec_tema_modi;
+	}
+
+	public void setFec_tema_modi(Date fec_tema_modi) {
+		this.fec_tema_modi = fec_tema_modi;
+	}
+
+	public void setRecursos(List<Recurso> recursos) {
+		this.recursos = recursos;
+	}
+
+	public void setAvances(List<Avance> avances) {
+		this.avances = avances;
 	}
 
 	public Long getIdTema() {
