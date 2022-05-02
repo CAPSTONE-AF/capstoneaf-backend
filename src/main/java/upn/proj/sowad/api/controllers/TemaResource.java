@@ -2,7 +2,9 @@ package upn.proj.sowad.api.controllers;
 
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.IMAGE_JPEG_VALUE;
-import static upn.proj.sowad.constant.FileConstant.*;
+import static upn.proj.sowad.constant.FileConstant.FORWARD_SLASH;
+import static upn.proj.sowad.constant.FileConstant.TEMA_FOLDER;
+import static upn.proj.sowad.constant.FileConstant.TEMP_PORTADA_IMAGE_BASE_URL;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -10,6 +12,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +31,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import upn.proj.sowad.entities.HttpResponse;
 import upn.proj.sowad.entities.Tema;
-import upn.proj.sowad.entities.User;
 import upn.proj.sowad.exception.domain.CursoExistsException;
 import upn.proj.sowad.exception.domain.CursoNotFoundException;
 import upn.proj.sowad.exception.domain.EmailExistException;
@@ -39,7 +41,6 @@ import upn.proj.sowad.exception.domain.UserNotFoundException;
 import upn.proj.sowad.exception.domain.UsernameExistException;
 import upn.proj.sowad.services.TemaService;
 
-@CrossOrigin("http://localhost:4200")
 @RestController
 @RequestMapping("/tema")
 
@@ -63,20 +64,22 @@ public class TemaResource {
     @PostMapping("/add")
     public ResponseEntity<Tema> addNewTema(@RequestParam("nombreCurso") String nombreCurso,
             @RequestParam("titulo") String titulo,
-            @RequestParam(value = "portadaUrl", required = false) MultipartFile portadaUrl)
+            @RequestParam(value = "portadaUrl", required = false)MultipartFile portadaUrl,
+            @RequestParam("idUser")String idUser)
             throws IOException, NotAnImageFileException, CursoNotFoundException, CursoExistsException,
             TemaNotFoundException, TemaExistsException {
-        Tema newTema = temaService.addNewTema(nombreCurso, titulo, portadaUrl);
+        Tema newTema = temaService.addNewTema(nombreCurso, titulo, portadaUrl,idUser);
         return new ResponseEntity<>(newTema, OK);
     }
 
     @PostMapping("/update")
     public ResponseEntity<Tema> update(@RequestParam("nombreCurso") String nombreCurso,
             @RequestParam("currentTitulo") String currentTitulo, @RequestParam("titulo") String titulo,
-            @RequestParam(value = "portadaUrl", required = false) MultipartFile portadaUrl)
+            @RequestParam(value = "portadaUrl", required = false) MultipartFile portadaUrl,
+            @RequestParam("idUser")String idUser)
             throws CursoNotFoundException, CursoExistsException, TemaNotFoundException, TemaExistsException,
             IOException, NotAnImageFileException {
-        Tema updatedTema = temaService.updateTema(nombreCurso, currentTitulo, titulo, portadaUrl);
+        Tema updatedTema = temaService.updateTema(nombreCurso, currentTitulo, titulo, portadaUrl,idUser);
         return new ResponseEntity<>(updatedTema, OK);
     }
 
