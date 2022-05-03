@@ -38,8 +38,6 @@ import upn.proj.sowad.exception.domain.TemaNotFoundException;
 import upn.proj.sowad.exception.domain.UserNotFoundException;
 import upn.proj.sowad.exception.domain.UsernameExistException;
 import upn.proj.sowad.services.TemaService;
-
-@CrossOrigin("http://localhost:4200")
 @RestController
 @RequestMapping("/tema")
 
@@ -58,6 +56,12 @@ public class TemaResource {
             throws CursoNotFoundException, CursoExistsException {
         List<Tema> temas = temaService.getTemas(nombreCurso);
         return new ResponseEntity<>(temas, OK);
+    }
+
+    @GetMapping("/find/{idTema}")
+    public ResponseEntity<Tema> getTemaById(@PathVariable("idTema") String idTema){
+        Tema tema = temaService.getTemaById(idTema);
+        return new ResponseEntity<>(tema, OK);
     }
 
     @PostMapping("/add")

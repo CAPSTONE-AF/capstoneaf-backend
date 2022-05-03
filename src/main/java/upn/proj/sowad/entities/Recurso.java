@@ -12,9 +12,17 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.Date;
 
 @Entity
 @Table(name="recurso")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Recurso {
 
 	@Id
@@ -30,66 +38,25 @@ public class Recurso {
 	
 	@Column(name="contenido")
 	private String contenido;
-	
+
+	@Column(name="usu_crea")
+	private String usuarioCreacion;
+
+	@Column(name="fec_crea")
+	private Date fechaCreacion;
+
+	@Column(name="usu_modi")
+	private String usuarioModificacion;
+
+	@Column(name="fec_modi")
+	private Date fechaModificacion;
+
 	@ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST},
 			fetch = FetchType.LAZY)
 	@JoinColumn(name="id_tema")
 	@JsonIgnore
 	private Tema tema;
 	
-	public Recurso() {
-		super();
-	}
 
-	public Recurso(String tipo, String contenido, Tema tema) {
-		super();
-		this.tipo = tipo;
-		this.contenido = contenido;
-		this.tema = tema;
-	}
-
-	public Long getIdRecurso() {
-		return idRecurso;
-	}
-
-	public void setIdRecurso(Long idRecurso) {
-		this.idRecurso = idRecurso;
-	}
-
-	public String getTipo() {
-		return tipo;
-	}
-
-	public void setTipo(String tipo) {
-		this.tipo = tipo;
-	}
-
-	public String getContenido() {
-		return contenido;
-	}
-
-	public void setContenido(String contenido) {
-		this.contenido = contenido;
-	}
-
-	public Tema getTema() {
-		return tema;
-	}
-
-	public void setTema(Tema tema) {
-		this.tema = tema;
-	}
-
-	public String getNombre() {
-		return nombre;
-	}
-
-	public void setNombre(String nombre) {
-		this.nombre = nombre;
-	}
-	
-	
-	
-	
 	
 }
