@@ -204,6 +204,10 @@ public class TemaServiceImpl implements TemaService{
         return tema;
 	}
 
+	@Override
+	public Tema getTemaById(String idTema) {
+		return this.temaRepository.findByIdTema(Long.parseLong(idTema));
+	}
 
 
 }

@@ -12,5 +12,7 @@ public interface TemaRepository extends JpaRepository<Tema,Long>{
 	public List<Tema> findAllByCurso(Curso curso);
 
 	public Tema findTemaByTitulo(String titulo);
+
+	Tema findByIdTema(Long idTema);
 	
 }

@@ -17,10 +17,12 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 
 @Entity
 @Table(name="tema")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Tema {
 
 	@Id
@@ -57,7 +59,6 @@ public class Tema {
 	private List<Recurso> recursos;
 	
 	@OneToMany(cascade = {CascadeType.ALL},mappedBy="tema")
-	@JsonIgnore
 	private List<Avance> avances;
 	
 

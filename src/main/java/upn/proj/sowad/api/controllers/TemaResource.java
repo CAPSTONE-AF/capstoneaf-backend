@@ -61,6 +61,12 @@ public class TemaResource {
         return new ResponseEntity<>(temas, OK);
     }
 
+    @GetMapping("/find/{idTema}")
+    public ResponseEntity<Tema> getTemaById(@PathVariable("idTema") String idTema){
+        Tema tema = temaService.getTemaById(idTema);
+        return new ResponseEntity<>(tema, OK);
+    }
+
     @PostMapping("/add")
     public ResponseEntity<Tema> addNewTema(@RequestParam("nombreCurso") String nombreCurso,
             @RequestParam("titulo") String titulo,
