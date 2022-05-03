@@ -15,18 +15,17 @@ import static upn.proj.sowad.constant.FileConstant.JPG_EXTENSION;
 import static upn.proj.sowad.constant.FileConstant.NOT_AN_IMAGE_FILE;
 import static upn.proj.sowad.constant.FileConstant.TEMA_FOLDER;
 import static upn.proj.sowad.constant.FileConstant.TEMA_IMAGE_PATH;
-import static upn.proj.sowad.constant.FileConstant.USER_FOLDER;
-import static upn.proj.sowad.constant.FileConstant.USER_IMAGE_PATH;
 import static upn.proj.sowad.constant.TemaImplConstant.NO_TEMA_FOUND_BY_TITULO;
 import static upn.proj.sowad.constant.TemaImplConstant.TITULO_ALREADY_EXISTS;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import javax.transaction.Transactional;
 
@@ -41,6 +40,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import upn.proj.sowad.dao.CursoRepository;
 import upn.proj.sowad.dao.TemaRepository;
+import upn.proj.sowad.dao.UserRepository;
 import upn.proj.sowad.entities.Curso;
 import upn.proj.sowad.entities.Tema;
 import upn.proj.sowad.entities.User;
@@ -57,13 +57,15 @@ public class TemaServiceImpl implements TemaService{
 	private Logger LOGGER = LoggerFactory.getLogger(getClass());
 	private TemaRepository temaRepository;
 	private CursoRepository cursoRepository;
+	private UserRepository userRepository;
 	
 	
 	@Autowired
-	public TemaServiceImpl(TemaRepository temaRepository,CursoRepository cursoRepository) {
+	public TemaServiceImpl(TemaRepository temaRepository,CursoRepository cursoRepository,UserRepository userRepository) {
 		super();
 		this.temaRepository = temaRepository;
 		this.cursoRepository = cursoRepository;
+		this.userRepository = userRepository;
 	}
 
 	@Override
@@ -121,7 +123,7 @@ public class TemaServiceImpl implements TemaService{
     }
 
 	@Override
-	public Tema addNewTema(String nombreCurso, String titulo, MultipartFile portadaImage) throws IOException, NotAnImageFileException, CursoNotFoundException, CursoExistsException, TemaNotFoundException, TemaExistsException {
+	public Tema addNewTema(String nombreCurso, String titulo, MultipartFile portadaImage,String idUser) throws IOException, NotAnImageFileException, CursoNotFoundException, CursoExistsException, TemaNotFoundException, TemaExistsException {
 		validateNewTitulo(nombreCurso,EMPTY,titulo);
 		Curso curso = cursoRepository.findCursoByNombre(nombreCurso);
 		Tema tema = null;
@@ -130,9 +132,16 @@ public class TemaServiceImpl implements TemaService{
 			tema.setTitulo(titulo);
 			tema.setCurso(curso);
 			tema.setPortadaUrl(getTemporaryPortadaImageUrl(nombreCurso,titulo));
+			Optional<User> user=this.userRepository.findById(Long.parseLong(idUser));
+			if(user.isPresent()){
+				tema.setUsu_crear_tema(user.get().getUsername());
+				tema.setFec_tema_crear(new Date());
+			}
+
 	        temaRepository.save(tema);
 	        savePortadaImage(tema, portadaImage);
 	        curso.setCantTemas(true);
+
 		} else {
 			throw new CursoNotFoundException(NO_CURSO_FOUND_BY_NOMBRE + nombreCurso);
 		}
@@ -140,12 +149,17 @@ public class TemaServiceImpl implements TemaService{
 	}
 
 	@Override
-	public Tema updateTema(String nombreCurso, String currentTitulo, String newTitulo, MultipartFile portadaImage) throws CursoNotFoundException, CursoExistsException, TemaNotFoundException, TemaExistsException, IOException, NotAnImageFileException {
+	public Tema updateTema(String nombreCurso, String currentTitulo, String newTitulo, MultipartFile portadaImage, String idUser) throws CursoNotFoundException, CursoExistsException, TemaNotFoundException, TemaExistsException, IOException, NotAnImageFileException {
 		Tema currentTema = validateNewTitulo(nombreCurso,currentTitulo, newTitulo);
 		Curso curso = cursoRepository.findCursoByNombre(nombreCurso);
 		if(curso!=null) {
 			currentTema.setTitulo(newTitulo);
 			currentTema.setCurso(curso);
+			Optional<User> user=this.userRepository.findById(Long.parseLong(idUser));
+			if(user.isPresent()){
+				currentTema.setUsu_tema_modi(user.get().getUsername());
+				currentTema.setFec_tema_modi(new Date());
+			}
 	        temaRepository.save(currentTema);
 	        savePortadaImage(currentTema, portadaImage);
 		}else {
