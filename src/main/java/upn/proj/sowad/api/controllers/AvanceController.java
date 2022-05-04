@@ -1,5 +1,7 @@
 package upn.proj.sowad.api.controllers;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +22,7 @@ import static org.springframework.http.HttpStatus.OK;
 public class AvanceController {
 
     private AvanceService avanceService;
+    private Logger log = LoggerFactory.getLogger(AvanceController.class.getName());
 
     @Autowired
     public AvanceController(AvanceService avanceService) {
@@ -32,9 +35,11 @@ public class AvanceController {
     }
 
     @GetMapping("/list/{idUser}")
-    public ResponseEntity<List<Avance>> getAllAvanceByUserId(@PathVariable("idUser") String idUser) {
-        List<Avance> avances = avanceService.getAvancesByUserId(idUser);
-        return new ResponseEntity<>(avances, OK);
+    public ResponseEntity<List<AvanceDto>> getAllAvanceByUserId(@PathVariable("idUser") String idUser) {
+        if(log.isInfoEnabled())
+            log.info("Entering 'getAllAvanceByUserId' method");
+        List<AvanceDto> avancesDto = avanceService.getAvancesByUserId(idUser);
+        return new ResponseEntity<>(avancesDto, OK);
     }
 
 }

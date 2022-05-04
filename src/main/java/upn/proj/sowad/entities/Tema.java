@@ -59,6 +59,7 @@ public class Tema {
 	private List<Recurso> recursos;
 	
 	@OneToMany(cascade = {CascadeType.ALL},mappedBy="tema")
+	@JsonIgnore
 	private List<Avance> avances;
 	
 

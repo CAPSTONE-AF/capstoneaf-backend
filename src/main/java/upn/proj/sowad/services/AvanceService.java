@@ -9,5 +9,5 @@ public interface AvanceService {
 
     void registerNewAvance(AvanceDto avanceDto);
 
-    List<Avance> getAvancesByUserId(String idUser);
+    List<AvanceDto> getAvancesByUserId(String idUser);
 }

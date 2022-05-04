@@ -4,11 +4,14 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class AvanceDto {
-
-    String idUser;
-    String idTema;
+    Long idAvance;
+    Date fechaCreacion;
+    Long idUser;
+    Long idTema;
 }

@@ -24,7 +24,6 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Avance {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
@@ -37,12 +36,12 @@ public class Avance {
 	@ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST},
 			fetch = FetchType.LAZY)
 	@JoinColumn(name="id_user")
-	@JsonIgnoreProperties("avances")
+	@JsonIgnore
 	private User user;
 	
 	@ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST},
 			fetch = FetchType.LAZY)
 	@JoinColumn(name="id_tema")
-	@JsonIgnoreProperties("avances")
+	@JsonIgnore
 	private Tema tema;
 }

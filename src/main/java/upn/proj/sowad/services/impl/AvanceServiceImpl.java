@@ -1,7 +1,11 @@
 package upn.proj.sowad.services.impl;
 
 import ch.qos.logback.core.net.SyslogOutputStream;
+import net.minidev.json.writer.BeansMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 import upn.proj.sowad.dao.AvanceRepository;
 import upn.proj.sowad.dao.TemaRepository;
@@ -13,14 +17,13 @@ import upn.proj.sowad.entities.User;
 import upn.proj.sowad.services.AvanceService;
 
 import javax.transaction.Transactional;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @Transactional
 public class AvanceServiceImpl implements AvanceService {
 
+    private Logger log = LoggerFactory.getLogger(getClass());
     private AvanceRepository avanceRepository;
     private UserRepository userRepository;
     private TemaRepository temaRepository;
@@ -38,10 +41,10 @@ public class AvanceServiceImpl implements AvanceService {
         avance.setFechaCreacion(new Date());
 
 
-        Optional<User> foundUser = this.userRepository.findById(Long.parseLong(avanceDto.getIdUser()));
+        Optional<User> foundUser = this.userRepository.findById(avanceDto.getIdUser());
 
         if(foundUser.isPresent()) {
-            Tema foundtema = this.temaRepository.findByIdTema(Long.parseLong(avanceDto.getIdTema()));
+            Tema foundtema = this.temaRepository.findByIdTema(avanceDto.getIdTema());
             User user = foundUser.get();
             if(this.avanceRepository.findByUserAndTema(user,foundtema)==null){
                 avance.setUser(user);
@@ -52,7 +55,19 @@ public class AvanceServiceImpl implements AvanceService {
     }
 
     @Override
-    public List<Avance> getAvancesByUserId(String idUser) {
-        return this.avanceRepository.findAllByUserId(Long.parseLong(idUser));
+    public List<AvanceDto> getAvancesByUserId(String idUser) {
+        List<AvanceDto> respuesta = new ArrayList<>();
+        List<Avance> avanceListByUser = this.avanceRepository.findAllByUserId(Long.parseLong(idUser));
+        Iterator<Avance> iterator = avanceListByUser.iterator();
+        while(iterator.hasNext()){
+            AvanceDto currentAvanceDto = new AvanceDto();
+            Avance currentAvance = (Avance)iterator.next();
+            currentAvanceDto.setIdAvance(currentAvance.getIdAvance());
+            currentAvanceDto.setIdUser(currentAvance.getUser().getId());
+            currentAvanceDto.setIdTema(currentAvance.getTema().getIdTema());
+            currentAvanceDto.setFechaCreacion(currentAvance.getFechaCreacion());
+            respuesta.add(currentAvanceDto);
+        }
+        return respuesta;
     }
 }
