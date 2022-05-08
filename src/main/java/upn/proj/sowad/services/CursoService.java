@@ -1,5 +1,7 @@
 package upn.proj.sowad.services;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.util.Date;
 import java.util.List;
 
@@ -21,4 +23,6 @@ public interface CursoService {
     void deleteCurso(String nombre);
     
     Curso register(String nombre) throws CursoNotFoundException, CursoExistsException;
+
+    ByteArrayInputStream exportarPiechartPopCursos(BufferedImage bufferedImage);
 }

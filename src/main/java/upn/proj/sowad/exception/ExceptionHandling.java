@@ -29,17 +29,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import upn.proj.sowad.entities.HttpResponse;
-import upn.proj.sowad.exception.domain.CursoExistsException;
-import upn.proj.sowad.exception.domain.CursoNotFoundException;
-import upn.proj.sowad.exception.domain.EmailExistException;
-import upn.proj.sowad.exception.domain.EmailNotFoundException;
-import upn.proj.sowad.exception.domain.UserNotFoundException;
-import upn.proj.sowad.exception.domain.UsernameExistException;
-import upn.proj.sowad.exception.domain.NotAnImageFileException;
-import upn.proj.sowad.exception.domain.RecursoExistsException;
-import upn.proj.sowad.exception.domain.RecursoNotFoundException;
-import upn.proj.sowad.exception.domain.TemaExistsException;
-import upn.proj.sowad.exception.domain.TemaNotFoundException;
+import upn.proj.sowad.exception.domain.*;
 
 @RestControllerAdvice
 public class ExceptionHandling implements ErrorController {
@@ -95,6 +85,11 @@ public class ExceptionHandling implements ErrorController {
 
     @ExceptionHandler(UsernameExistException.class)
     public ResponseEntity<HttpResponse> usernameExistException(UsernameExistException exception) {
+        return createHttpResponse(BAD_REQUEST, exception.getMessage());
+    }
+
+    @ExceptionHandler(CursoException.class)
+    public ResponseEntity<HttpResponse> cursoException(CursoException exception) {
         return createHttpResponse(BAD_REQUEST, exception.getMessage());
     }
 
