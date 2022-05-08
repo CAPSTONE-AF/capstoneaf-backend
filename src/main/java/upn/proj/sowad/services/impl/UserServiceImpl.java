@@ -1,11 +1,14 @@
 package upn.proj.sowad.services.impl;
 
+import upn.proj.sowad.entities.Grado;
+import upn.proj.sowad.entities.GradoPopulation;
 import upn.proj.sowad.entities.User;
 import upn.proj.sowad.entities.UserPrincipal;
 import upn.proj.sowad.enumeration.Role;
 import upn.proj.sowad.exception.domain.*;
 import upn.proj.sowad.dao.UserRepository;
 import upn.proj.sowad.services.EmailService;
+import upn.proj.sowad.services.GradoService;
 import upn.proj.sowad.services.LoginAttemptService;
 import upn.proj.sowad.services.UserService;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -23,16 +26,37 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.io.ByteArrayOutputStream;
+import java.util.stream.Stream;
+
+import javax.imageio.ImageIO;
+
+import com.itextpdf.text.BaseColor;
+import com.itextpdf.text.Chunk;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.FontFactory;
+import com.itextpdf.text.Image;
+import com.itextpdf.text.PageSize;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.Phrase;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
+
+import javax.annotation.Resource;
 import javax.mail.MessagingException;
 import javax.transaction.Transactional;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import static upn.proj.sowad.constant.FileConstant.*;
 import static upn.proj.sowad.constant.FileConstant.NOT_AN_IMAGE_FILE;
@@ -52,12 +76,16 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private LoginAttemptService loginAttemptService;
     private EmailService emailService;
 
+    @Resource(name = "gradoServiceV1")
+    private GradoService gradoService;
+
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder, LoginAttemptService loginAttemptService, EmailService emailService) {
+    public UserServiceImpl(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder, LoginAttemptService loginAttemptService, EmailService emailService, GradoService gradoService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.loginAttemptService = loginAttemptService;
         this.emailService = emailService;
+        this.gradoService = gradoService;
     }
 
     @Override
@@ -78,7 +106,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public User register(String firstName, String lastName, String username, String email, String password) throws UserNotFoundException, UsernameExistException, EmailExistException, MessagingException {
+    public User register(String firstName, String lastName, String username, String email, String password, Long idGrado) throws UserNotFoundException, UsernameExistException, EmailExistException, MessagingException {
+        if(LOGGER.isInfoEnabled())
+            LOGGER.info("Entering 'register' method");
         validateNewUsernameAndEmail(EMPTY, username, email);
         User user = new User();
         user.setUserId(generateUserId());
@@ -94,8 +124,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         user.setRole(ROLE_USER.name());
         user.setAuthorities(ROLE_USER.getAuthorities());
         user.setProfileImageUrl(getTemporaryProfileImageUrl(username));
+        if(idGrado!=null) user.setGrado(this.gradoService.getGradyById(idGrado));
         userRepository.save(user);
-        LOGGER.info("New user password: " + password);
+
        //emailSerice.sendNewPasswordEmail(firstName, password, email);v
         return user;
     }
@@ -157,6 +188,47 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         User user = validateNewUsernameAndEmail(username, null, null);
         saveProfileImage(user, profileImage);
         return user;
+    }
+
+    @Override
+    public List<GradoPopulation> buscarUsuariosInscritosPorGrado() {
+        List<Grado> gradoList = this.gradoService.getAllGrados();
+        Iterator<Grado> iter = gradoList.iterator();
+        List<GradoPopulation> respuesta = new ArrayList<>();
+        while(iter.hasNext()){
+            Grado gradoActual = iter.next();
+            Integer totalAlumnos = this.userRepository.countAllByGrado(gradoActual);
+            respuesta.add(new GradoPopulation(gradoActual.getValorNombreGrado(), totalAlumnos));
+        }
+        return respuesta;
+    }
+
+    @Override
+    public ByteArrayInputStream exportarBarchartDeNumUsuByGrado(BufferedImage bufferedImage) {
+        Document document = new Document(PageSize.A4.rotate());
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        try {
+            PdfWriter.getInstance(document, out);
+            document.open();
+
+            // add text to pdf file
+            com.itextpdf.text.Font font = com.itextpdf.text.FontFactory.getFont(FontFactory.COURIER, 14,
+                    BaseColor.BLACK);
+            Paragraph paragraph = new Paragraph("Bar Chart", font);
+            paragraph.setAlignment(Element.ALIGN_CENTER);
+            document.add(paragraph);
+            document.add(Chunk.NEWLINE);
+
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ImageIO.write(bufferedImage, "png", baos);
+            Image img = Image.getInstance(baos.toByteArray());
+            img.setAlignment(Element.ALIGN_CENTER);
+            document.add(img);
+            document.close();
+        } catch (DocumentException | IOException e) {
+            e.printStackTrace();
+        }
+        return new ByteArrayInputStream(out.toByteArray());
     }
 
     @Override

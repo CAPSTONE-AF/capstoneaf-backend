@@ -1,11 +1,15 @@
 package upn.proj.sowad.api.controllers;
 
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.MediaType;
+import upn.proj.sowad.dto.UserDto;
 import upn.proj.sowad.entities.HttpResponse;
 import upn.proj.sowad.entities.User;
 import upn.proj.sowad.entities.UserPrincipal;
 import upn.proj.sowad.exception.ExceptionHandling;
 import upn.proj.sowad.exception.domain.*;
 import upn.proj.sowad.services.UserService;
+import upn.proj.sowad.services.UtilityService;
 import upn.proj.sowad.utility.JWTTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -17,6 +21,12 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.util.Locale;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
 import javax.mail.MessagingException;
 
 import java.io.ByteArrayOutputStream;
@@ -26,6 +36,23 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
+
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartUtils;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.labels.ItemLabelAnchor;
+import org.jfree.chart.labels.ItemLabelPosition;
+import org.jfree.chart.labels.PieSectionLabelGenerator;
+import org.jfree.chart.labels.StandardCategoryItemLabelGenerator;
+import org.jfree.chart.labels.StandardPieSectionLabelGenerator;
+import org.jfree.chart.plot.CategoryPlot;
+import org.jfree.chart.plot.PiePlot3D;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.renderer.category.CategoryItemRenderer;
+import org.jfree.chart.ui.TextAnchor;
+import org.jfree.data.category.DefaultCategoryDataset;
+import org.jfree.data.general.DefaultPieDataset;
+import org.jfree.data.general.PieDataset;
 
 import static upn.proj.sowad.constant.FileConstant.*;
 import static upn.proj.sowad.constant.SecurityConstant.JWT_TOKEN_HEADER;
@@ -41,12 +68,15 @@ public class UserResource extends ExceptionHandling {
     private UserService userService;
     private JWTTokenProvider jwtTokenProvider;
 
+    @Resource(name = "utilityServiceV1")
+    private UtilityService utilityService;
+
     @Autowired
-    public UserResource(AuthenticationManager authenticationManager, UserService userService,
-            JWTTokenProvider jwtTokenProvider) {
+    public UserResource(AuthenticationManager authenticationManager, UserService userService, JWTTokenProvider jwtTokenProvider, UtilityService utilityService) {
         this.authenticationManager = authenticationManager;
         this.userService = userService;
         this.jwtTokenProvider = jwtTokenProvider;
+        this.utilityService = utilityService;
     }
 
     @PostMapping("/login")
@@ -59,10 +89,10 @@ public class UserResource extends ExceptionHandling {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<User> register(@RequestBody User user)
+    public ResponseEntity<User> register(@RequestBody UserDto userDto)
             throws UserNotFoundException, UsernameExistException, EmailExistException, MessagingException {
-        User newUser = userService.register(user.getFirstName(), user.getLastName(), user.getUsername(),
-                user.getEmail(),user.getPassword());
+        User newUser = userService.register(userDto.getFirstName(), userDto.getLastName(), userDto.getUsername(),
+                userDto.getEmail(),userDto.getPassword(), userDto.getIdGrado());
         return new ResponseEntity<>(newUser, OK);
     }
 
@@ -161,4 +191,78 @@ public class UserResource extends ExceptionHandling {
     private void authenticate(String username, String password) {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
     }
+
+    @GetMapping("/exportar/barchart/num_usu_grado/image")
+    public void buildBarChartImage(HttpServletResponse response)
+            throws IOException {
+
+        final String title = "Total de usuarios inscritos según grado de escuela registrado.";
+        final DefaultCategoryDataset categoryDataset = buildDatasetUsuariosInscritosPorGrado();
+        final String categoryAxisLabel = "Grados";
+        final String valueAxisLabel = "Cantidad de usuarios";
+        final boolean legend = true;
+        final boolean tooltips = true;
+        final boolean urls = true;
+
+        final JFreeChart barChart = ChartFactory.createBarChart(title, categoryAxisLabel, valueAxisLabel,
+                categoryDataset, PlotOrientation.VERTICAL, legend, tooltips, urls);
+        final CategoryPlot categoryPlot = (CategoryPlot) barChart.getPlot();
+        final CategoryItemRenderer categoryItemRenderer = categoryPlot.getRenderer();
+        categoryItemRenderer.setDefaultItemLabelGenerator(new StandardCategoryItemLabelGenerator());
+        categoryItemRenderer.setDefaultItemLabelsVisible(true);
+
+        final ItemLabelPosition position = new ItemLabelPosition(ItemLabelAnchor.OUTSIDE12, TextAnchor.TOP_CENTER);
+        categoryItemRenderer.setDefaultPositiveItemLabelPosition(position);
+
+        writeChartAsPNGImage(barChart, 700, 450, response);
+    }
+
+    @GetMapping("/exportar/barchart/num_usu_grado/pdf")
+    public ResponseEntity<InputStreamResource> buildBarChart()
+            throws IOException {
+        final DefaultCategoryDataset categoryDataset = buildDatasetUsuariosInscritosPorGrado();
+        String prefijo = this.utilityService.obtenerFechaActualConFormatoParaArchivos();
+        final String title = "Total de usuarios inscritos según grado de escuela registrado.";
+        final String categoryAxisLabel = "Grados";
+        final String valueAxisLabel = "Cantidad de usuarios";
+        final boolean legend = true;
+        final boolean tooltips = true;
+        final boolean urls = true;
+
+        final JFreeChart barChart = ChartFactory.createBarChart(title, categoryAxisLabel, valueAxisLabel,
+                categoryDataset, PlotOrientation.VERTICAL, legend, tooltips, urls);
+        final CategoryPlot categoryPlot = (CategoryPlot) barChart.getPlot();
+        final CategoryItemRenderer categoryItemRenderer = categoryPlot.getRenderer();
+        categoryItemRenderer.setDefaultItemLabelGenerator(new StandardCategoryItemLabelGenerator());
+        categoryItemRenderer.setDefaultItemLabelsVisible(true);
+
+        final ItemLabelPosition position = new ItemLabelPosition(ItemLabelAnchor.OUTSIDE12, TextAnchor.TOP_CENTER);
+        categoryItemRenderer.setDefaultPositiveItemLabelPosition(position);
+
+        final BufferedImage bufferedImage = barChart.createBufferedImage(700, 450);
+        ByteArrayInputStream bais = this.userService.exportarBarchartDeNumUsuByGrado(bufferedImage);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "inline; filename = " + prefijo + "_barchart.pdf");
+        return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF)
+                .body(new InputStreamResource(bais));
+    }
+
+    private DefaultCategoryDataset buildDatasetUsuariosInscritosPorGrado() {
+        final Comparable<String> rowKey = "Total de usuarios";
+        final DefaultCategoryDataset categoryDataset = new DefaultCategoryDataset();
+        this.userService.buscarUsuariosInscritosPorGrado().forEach((grado) -> categoryDataset
+                .setValue(grado.getCantidadUsuarios(), rowKey, grado.getValorNombreGrado()));
+
+        return categoryDataset;
+    }
+
+    private void writeChartAsPNGImage(final JFreeChart chart, final int width, final int height,
+                                      HttpServletResponse response) throws IOException {
+        final BufferedImage bufferedImage = chart.createBufferedImage(width, height);
+        response.setContentType(MediaType.IMAGE_PNG_VALUE);
+        ChartUtils.writeBufferedImageAsPNG(response.getOutputStream(), bufferedImage);
+    }
+
+
+
 }

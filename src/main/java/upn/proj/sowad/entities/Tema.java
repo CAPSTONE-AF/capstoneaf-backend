@@ -81,6 +81,14 @@ public class Tema {
 		this.usu_tema_modi=usu_tema_modi;
 	}
 
+	public Long getIdTema() {
+		return idTema;
+	}
+
+	public void setIdTema(Long idTema) {
+		this.idTema = idTema;
+	}
+
 	public String getUsu_tema_modi() {
 		return usu_tema_modi;
 	}
@@ -113,22 +121,6 @@ public class Tema {
 		this.fec_tema_modi = fec_tema_modi;
 	}
 
-	public void setRecursos(List<Recurso> recursos) {
-		this.recursos = recursos;
-	}
-
-	public void setAvances(List<Avance> avances) {
-		this.avances = avances;
-	}
-
-	public Long getIdTema() {
-		return idTema;
-	}
-
-	public void setIdTema(Long idTema) {
-		this.idTema = idTema;
-	}
-
 	public String getTitulo() {
 		return titulo;
 	}
@@ -151,24 +143,21 @@ public class Tema {
 
 	public void setCurso(Curso curso) {
 		this.curso = curso;
-	
 	}
 
 	public List<Recurso> getRecursos() {
 		return recursos;
 	}
 
-	public void setRecursos(Recurso recurso) {
-		recursos.add(recurso);
+	public void setRecursos(List<Recurso> recursos) {
+		this.recursos = recursos;
 	}
 
 	public List<Avance> getAvances() {
 		return avances;
 	}
 
-	public void setAvances(Avance avance) {
-		this.avances.add(avance);
+	public void setAvances(List<Avance> avances) {
+		this.avances = avances;
 	}
-	
-	
 }

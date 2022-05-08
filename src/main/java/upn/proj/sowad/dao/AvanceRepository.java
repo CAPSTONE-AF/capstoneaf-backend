@@ -15,4 +15,6 @@ public interface AvanceRepository extends JpaRepository<Avance, Long> {
 
     Avance findByUserAndTema(User user, Tema tema);
 
+    Integer countAllByTema(Tema tema);
+
 }

@@ -39,7 +39,13 @@ public class Curso {
 	private Date fec_curso_modi;
 
 	@Column(name="cant_temas")
-	private int cantTemas;
+	private Integer cantTemas;
+
+	@Column(name="num_visit")
+	private Integer numeroVisitas;
+
+	@Column(name="porc_popu")
+	private Double porcentajePopularidad;
 	
 	@OneToMany(cascade = {CascadeType.ALL},mappedBy="curso")
 	@JsonIgnore
@@ -94,10 +100,6 @@ public class Curso {
 		this.fec_curso_modi = fec_curso_modi;
 	}
 
-	public void setCantTemas(int cantTemas) {
-		this.cantTemas = cantTemas;
-	}
-
 	public Long getIdCurso() {
 		return idCurso;
 	}
@@ -113,8 +115,8 @@ public class Curso {
 	public void setNombre(String nombre) {
 		this.nombre = nombre;
 	}
-	
-	public int getCantTemas() {
+
+	public Integer getCantTemas() {
 		return cantTemas;
 	}
 
@@ -136,10 +138,23 @@ public class Curso {
 		cantTemas++;
 	}
 
-	
-	
-	
-	
-	
-	
+	public Integer getNumeroVisitas() {
+		return numeroVisitas;
+	}
+
+	public void setNumeroVisitas(Integer numeroVisitas) {
+		this.numeroVisitas = numeroVisitas;
+	}
+
+	public Double getPorcentajePopularidad() {
+		return porcentajePopularidad;
+	}
+
+	public void setPorcentajePopularidad(Double porcentajePopularidad) {
+		this.porcentajePopularidad = porcentajePopularidad;
+	}
+
+	public void addVisita() {
+		this.numeroVisitas += 1;
+	}
 }
