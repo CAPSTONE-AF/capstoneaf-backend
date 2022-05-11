@@ -77,7 +77,6 @@ public class RecursoResource {
 	
 	
 	@DeleteMapping("/delete/{nombreCurso}/{tituloTema}/{nombre}")
-    @PreAuthorize("hasAnyAuthority('user:delete')")
     public ResponseEntity<HttpResponse> deleteCurso(@PathVariable("nombreCurso") String nombreCurso,
     									@PathVariable("tituloTema") String tituloTema,
     									@PathVariable("nombre") String nombre) throws IOException, CursoNotFoundException, CursoExistsException, RecursoNotFoundException, TemaNotFoundException {

@@ -131,7 +131,7 @@ public class TemaServiceImpl implements TemaService{
 			tema = new Tema();
 			tema.setTitulo(titulo);
 			tema.setCurso(curso);
-			tema.setPortadaUrl(getTemporaryPortadaImageUrl(nombreCurso,titulo));
+			tema.setPortadaUrl("https://i.vimeocdn.com/portrait/1274237_300x300.jpg");
 			Optional<User> user=this.userRepository.findById(Long.parseLong(idUser));
 			if(user.isPresent()){
 				tema.setUsu_crear_tema(user.get().getUsername());
