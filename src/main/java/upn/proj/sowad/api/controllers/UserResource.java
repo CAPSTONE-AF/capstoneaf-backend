@@ -1,8 +1,11 @@
 package upn.proj.sowad.api.controllers;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.MediaType;
 import upn.proj.sowad.dto.UserDto;
+import upn.proj.sowad.entities.Grado;
 import upn.proj.sowad.entities.HttpResponse;
 import upn.proj.sowad.entities.User;
 import upn.proj.sowad.entities.UserPrincipal;
@@ -60,8 +63,11 @@ import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.MediaType.IMAGE_JPEG_VALUE;
 
 @RestController
-@RequestMapping(path = {"/user"})
+@RequestMapping(path = { "/", "/user" })
 public class UserResource extends ExceptionHandling {
+
+    private Logger log = LoggerFactory.getLogger(getClass());
+
     public static final String EMAIL_SENT = "An email with a new password was sent to: ";
     public static final String USER_DELETED_SUCCESSFULLY = "User deleted successfully";
     private AuthenticationManager authenticationManager;
@@ -80,57 +86,75 @@ public class UserResource extends ExceptionHandling {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<User> login(@RequestBody User user) {
-        authenticate(user.getUsername(), user.getPassword());
-        User loginUser = userService.findUserByUsername(user.getUsername());
+    public ResponseEntity<UserDto> login(@RequestBody UserDto userDto) {
+        if(log.isInfoEnabled())
+            log.info("Entering 'login' method");
+        authenticate(userDto.getUsername(), userDto.getPassword());
+        User loginUser = userService.findUserByUsername(userDto.getUsername());
+        UserDto loginUserDto = userService.findUserDtoByUsername(userDto.getUsername());
         UserPrincipal userPrincipal = new UserPrincipal(loginUser);
         HttpHeaders jwtHeader = getJwtHeader(userPrincipal);
-        return new ResponseEntity<>(loginUser, jwtHeader, OK);
+        return new ResponseEntity<>(loginUserDto, jwtHeader, OK);
     }
 
     @PostMapping("/register")
-    public ResponseEntity<User> register(@RequestBody UserDto userDto)
+    public ResponseEntity<UserDto> register(@RequestBody UserDto userDto)
             throws UserNotFoundException, UsernameExistException, EmailExistException, MessagingException {
-        User newUser = userService.register(userDto.getFirstName(), userDto.getLastName(), userDto.getUsername(),
+        if(log.isInfoEnabled())
+            log.info("Entering 'register' method");
+        UserDto newUser = userService.register(userDto.getFirstName(), userDto.getLastName(), userDto.getUsername(),
                 userDto.getEmail(),userDto.getPassword(), userDto.getIdGrado());
         return new ResponseEntity<>(newUser, OK);
     }
 
     @PostMapping("/add")
-    public ResponseEntity<User> addNewUser(@RequestParam("firstName") String firstName,
+    public ResponseEntity<UserDto> addNewUser(@RequestParam("firstName") String firstName,
             @RequestParam("lastName") String lastName, @RequestParam("username") String username,
-            @RequestParam("email") String email, @RequestParam("role") String role,
-            @RequestParam("isActive") String isActive, @RequestParam("isNonLocked") String isNonLocked,
-            @RequestParam(value = "profileImage", required = false) MultipartFile profileImage)
+            @RequestParam("email") String email, @RequestParam("password") String password)
             throws UserNotFoundException, UsernameExistException, EmailExistException, IOException,
             NotAnImageFileException {
-        User newUser = userService.addNewUser(firstName, lastName, username, email, role,
-                Boolean.parseBoolean(isNonLocked), Boolean.parseBoolean(isActive), profileImage);
+        if(log.isInfoEnabled())
+            log.info("Entering 'addNewUser' method");
+        UserDto newUser = userService.addNewUser(firstName, lastName, username, email, password);
         return new ResponseEntity<>(newUser, OK);
     }
 
     @PostMapping("/update")
-    public ResponseEntity<User> update(@RequestParam("currentUsername") String currentUsername,
+    public ResponseEntity<UserDto> update(@RequestParam("currentUsername") String currentUsername,
             @RequestParam("firstName") String firstName, @RequestParam("lastName") String lastName,
             @RequestParam("username") String username, @RequestParam("email") String email,
-            @RequestParam("role") String role, @RequestParam("isActive") String isActive,
-            @RequestParam("isNonLocked") String isNonLocked,
-            @RequestParam(value = "profileImage", required = false) MultipartFile profileImage)
+            @RequestParam(value = "profileImageUrl", required = false) String profileImageUrl,
+            @RequestParam(value = "idGrado", required = false) Long idGrado,
+            @RequestParam(value = "role", required = false) String role,
+            @RequestParam(value = "isActive", required = false) String isActive,
+            @RequestParam(value = "isNonLocked", required = false) String isNonLocked)
             throws UserNotFoundException, UsernameExistException, EmailExistException, IOException,
             NotAnImageFileException {
-        User updatedUser = userService.updateUser(currentUsername, firstName, lastName, username, email, role,
-                Boolean.parseBoolean(isNonLocked), Boolean.parseBoolean(isActive), profileImage);
+        if(log.isInfoEnabled())
+            log.info("Entering 'update' method");
+        UserDto updatedUser = userService.updateUser(currentUsername, firstName, lastName, username, email, profileImageUrl, idGrado, role, isActive, isNonLocked);
         return new ResponseEntity<>(updatedUser, OK);
     }
 
+    @GetMapping("/userHasGrado/{idUser}")
+    public ResponseEntity<Grado> userHasGrado(@PathVariable("idUser") Long idUser) {
+        if(log.isInfoEnabled())
+            log.info("Entering 'userHasGrado' method");
+        return new ResponseEntity<>(this.userService.getGradoByUser(idUser), OK);
+    }
+
     @GetMapping("/find/{username}")
-    public ResponseEntity<User> getUser(@PathVariable("username") String username) {
-        User user = userService.findUserByUsername(username);
+    public ResponseEntity<UserDto> getUser(@PathVariable("username") String username) {
+        if(log.isInfoEnabled())
+            log.info("Entering 'getUser' method");
+        UserDto user = userService.findUserDtoByUsername(username);
         return new ResponseEntity<>(user, OK);
     }
 
     @GetMapping("/list")
     public ResponseEntity<List<User>> getAllUsers() {
+        if(log.isInfoEnabled())
+            log.info("Entering 'getAllUsers' method");
         List<User> users = userService.getUsers();
         return new ResponseEntity<>(users, OK);
     }
@@ -138,12 +162,16 @@ public class UserResource extends ExceptionHandling {
     @GetMapping("/resetpassword/{email}")
     public ResponseEntity<HttpResponse> resetPassword(@PathVariable("email") String email)
             throws MessagingException, EmailNotFoundException {
+        if(log.isInfoEnabled())
+            log.info("Entering 'resetPassword' method");
         userService.resetPassword(email);
         return response(OK, EMAIL_SENT + email);
     }
 
     @DeleteMapping("/delete/{username}")
     public ResponseEntity<HttpResponse> deleteUser(@PathVariable("username") String username) throws IOException {
+        if(log.isInfoEnabled())
+            log.info("Entering 'deleteUser' method");
         userService.deleteUser(username);
         return response(OK, USER_DELETED_SUCCESSFULLY);
     }
@@ -152,6 +180,8 @@ public class UserResource extends ExceptionHandling {
     public ResponseEntity<User> updateProfileImage(@RequestParam("username") String username,
             @RequestParam(value = "profileImage") MultipartFile profileImage) throws UserNotFoundException,
             UsernameExistException, EmailExistException, IOException, NotAnImageFileException {
+        if(log.isInfoEnabled())
+            log.info("Entering 'updateProfileImage' method");
         User user = userService.updateProfileImage(username, profileImage);
         return new ResponseEntity<>(user, OK);
     }
@@ -159,11 +189,15 @@ public class UserResource extends ExceptionHandling {
     @GetMapping(path = "/image/{username}/{fileName}", produces = IMAGE_JPEG_VALUE)
     public byte[] getProfileImage(@PathVariable("username") String username, @PathVariable("fileName") String fileName)
             throws IOException {
+        if(log.isInfoEnabled())
+            log.info("Entering 'getProfileImage' method");
         return Files.readAllBytes(Paths.get(USER_FOLDER + username + FORWARD_SLASH + fileName));
     }
 
     @GetMapping(path = "/image/profile/{username}", produces = IMAGE_JPEG_VALUE)
     public byte[] getTempProfileImage(@PathVariable("username") String username) throws IOException {
+        if(log.isInfoEnabled())
+            log.info("Entering 'getTempProfileImage' method");
         URL url = new URL(TEMP_PROFILE_IMAGE_BASE_URL + username);
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         try (InputStream inputStream = url.openStream()) {
@@ -177,25 +211,32 @@ public class UserResource extends ExceptionHandling {
     }
 
     private ResponseEntity<HttpResponse> response(HttpStatus httpStatus, String message) {
+        if(log.isInfoEnabled())
+            log.info("Entering 'response' method");
         return new ResponseEntity<>(
                 new HttpResponse(httpStatus.value(), httpStatus, httpStatus.getReasonPhrase().toUpperCase(), message),
                 httpStatus);
     }
 
     private HttpHeaders getJwtHeader(UserPrincipal user) {
+        if(log.isInfoEnabled())
+            log.info("Entering 'getJwtHeader' method");
         HttpHeaders headers = new HttpHeaders();
         headers.add(JWT_TOKEN_HEADER, jwtTokenProvider.generateJwtToken(user));
         return headers;
     }
 
     private void authenticate(String username, String password) {
+        if(log.isInfoEnabled())
+            log.info("Entering 'authenticate' method");
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
     }
 
     @GetMapping("/exportar/barchart/num_usu_grado/image")
     public void buildBarChartImage(HttpServletResponse response)
             throws IOException {
-
+        if(log.isInfoEnabled())
+            log.info("Entering 'buildBarChartImage' method");
         final String title = "Total de usuarios inscritos según grado de escuela registrado.";
         final DefaultCategoryDataset categoryDataset = buildDatasetUsuariosInscritosPorGrado();
         final String categoryAxisLabel = "Grados";
@@ -220,6 +261,8 @@ public class UserResource extends ExceptionHandling {
     @GetMapping("/exportar/barchart/num_usu_grado/pdf")
     public ResponseEntity<InputStreamResource> buildBarChart()
             throws IOException {
+        if(log.isInfoEnabled())
+            log.info("Entering 'buildBarChart' method");
         final DefaultCategoryDataset categoryDataset = buildDatasetUsuariosInscritosPorGrado();
         String prefijo = this.utilityService.obtenerFechaActualConFormatoParaArchivos();
         final String title = "Total de usuarios inscritos según grado de escuela registrado.";
@@ -248,6 +291,8 @@ public class UserResource extends ExceptionHandling {
     }
 
     private DefaultCategoryDataset buildDatasetUsuariosInscritosPorGrado() {
+        if(log.isInfoEnabled())
+            log.info("Entering 'buildDatasetUsuariosInscritosPorGrado' method");
         final Comparable<String> rowKey = "Total de usuarios";
         final DefaultCategoryDataset categoryDataset = new DefaultCategoryDataset();
         this.userService.buscarUsuariosInscritosPorGrado().forEach((grado) -> categoryDataset
@@ -258,6 +303,8 @@ public class UserResource extends ExceptionHandling {
 
     private void writeChartAsPNGImage(final JFreeChart chart, final int width, final int height,
                                       HttpServletResponse response) throws IOException {
+        if(log.isInfoEnabled())
+            log.info("Entering 'writeChartAsPNGImage' method");
         final BufferedImage bufferedImage = chart.createBufferedImage(width, height);
         response.setContentType(MediaType.IMAGE_PNG_VALUE);
         ChartUtils.writeBufferedImageAsPNG(response.getOutputStream(), bufferedImage);

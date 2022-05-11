@@ -19,9 +19,9 @@ public interface TemaService {
 
     Tema findTemaByTitulo(String nombreCurso, String titulo) throws CursoNotFoundException, CursoExistsException, TemaNotFoundException;
     
-    Tema addNewTema(String nombreCurso, String titulo, MultipartFile portadaUrl, String idUser) throws IOException, NotAnImageFileException, CursoNotFoundException, CursoExistsException, TemaNotFoundException, TemaExistsException;
+    Tema addNewTema(String nombreCurso, String titulo, String portadaUrl, String idUser) throws IOException, NotAnImageFileException, CursoNotFoundException, CursoExistsException, TemaNotFoundException, TemaExistsException;
 
-    Tema updateTema(String nombreCurso, String currentTitulo, String newTitulo, MultipartFile portadaImage, String idUser) throws CursoNotFoundException, CursoExistsException, TemaNotFoundException, TemaExistsException, IOException, NotAnImageFileException;
+    Tema updateTema(String nombreCurso, String currentTitulo, String newTitulo, String portadaImage, String idUser) throws CursoNotFoundException, CursoExistsException, TemaNotFoundException, TemaExistsException, IOException, NotAnImageFileException;
 
     void deleteTema(String nombreCurso, String titulo) throws IOException, CursoNotFoundException, CursoExistsException, TemaNotFoundException;
 

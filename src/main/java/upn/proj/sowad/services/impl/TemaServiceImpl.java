@@ -123,7 +123,7 @@ public class TemaServiceImpl implements TemaService{
     }
 
 	@Override
-	public Tema addNewTema(String nombreCurso, String titulo, MultipartFile portadaImage,String idUser) throws IOException, NotAnImageFileException, CursoNotFoundException, CursoExistsException, TemaNotFoundException, TemaExistsException {
+	public Tema addNewTema(String nombreCurso, String titulo, String portadaImage,String idUser) throws IOException, NotAnImageFileException, CursoNotFoundException, CursoExistsException, TemaNotFoundException, TemaExistsException {
 		validateNewTitulo(nombreCurso,EMPTY,titulo);
 		Curso curso = cursoRepository.findCursoByNombre(nombreCurso);
 		Tema tema = null;
@@ -138,8 +138,11 @@ public class TemaServiceImpl implements TemaService{
 				tema.setFec_tema_crear(new Date());
 			}
 
+			if(portadaImage!=null && !portadaImage.isEmpty())
+				tema.setPortadaUrl(portadaImage);
+
 	        temaRepository.save(tema);
-	        savePortadaImage(tema, portadaImage);
+//	        savePortadaImage(tema, portadaImage);
 	        curso.setCantTemas(true);
 
 		} else {
@@ -149,7 +152,7 @@ public class TemaServiceImpl implements TemaService{
 	}
 
 	@Override
-	public Tema updateTema(String nombreCurso, String currentTitulo, String newTitulo, MultipartFile portadaImage, String idUser) throws CursoNotFoundException, CursoExistsException, TemaNotFoundException, TemaExistsException, IOException, NotAnImageFileException {
+	public Tema updateTema(String nombreCurso, String currentTitulo, String newTitulo, String portadaImage, String idUser) throws CursoNotFoundException, CursoExistsException, TemaNotFoundException, TemaExistsException, IOException, NotAnImageFileException {
 		Tema currentTema = validateNewTitulo(nombreCurso,currentTitulo, newTitulo);
 		Curso curso = cursoRepository.findCursoByNombre(nombreCurso);
 		if(curso!=null) {
@@ -160,8 +163,10 @@ public class TemaServiceImpl implements TemaService{
 				currentTema.setUsu_tema_modi(user.get().getUsername());
 				currentTema.setFec_tema_modi(new Date());
 			}
+			if(portadaImage!=null && !portadaImage.isEmpty())
+				currentTema.setPortadaUrl(portadaImage);
 	        temaRepository.save(currentTema);
-	        savePortadaImage(currentTema, portadaImage);
+//	        savePortadaImage(currentTema, portadaImage);
 		}else {
 			throw new CursoNotFoundException(NO_CURSO_FOUND_BY_NOMBRE + nombreCurso);
 		}

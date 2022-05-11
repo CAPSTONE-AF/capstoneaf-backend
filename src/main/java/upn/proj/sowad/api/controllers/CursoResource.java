@@ -107,7 +107,6 @@ public class CursoResource {
 	
 	
 	@DeleteMapping("/delete/{nombre}")
-    @PreAuthorize("hasAnyAuthority('user:delete')")
     public ResponseEntity<HttpResponse> deleteCurso(@PathVariable("nombre") String nombre) {
         cursoService.deleteCurso(nombre);
         return response(OK, CURSO_DELETED_SUCCESSFULLY);

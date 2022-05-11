@@ -70,7 +70,7 @@ public class TemaResource {
     @PostMapping("/add")
     public ResponseEntity<Tema> addNewTema(@RequestParam("nombreCurso") String nombreCurso,
             @RequestParam("titulo") String titulo,
-            @RequestParam(value = "portadaUrl", required = false)MultipartFile portadaUrl,
+            @RequestParam(value = "portadaUrl", required = false)String portadaUrl,
             @RequestParam("idUser")String idUser)
             throws IOException, NotAnImageFileException, CursoNotFoundException, CursoExistsException,
             TemaNotFoundException, TemaExistsException {
@@ -81,7 +81,7 @@ public class TemaResource {
     @PostMapping("/update")
     public ResponseEntity<Tema> update(@RequestParam("nombreCurso") String nombreCurso,
             @RequestParam("currentTitulo") String currentTitulo, @RequestParam("titulo") String titulo,
-            @RequestParam(value = "portadaUrl", required = false) MultipartFile portadaUrl,
+            @RequestParam(value = "portadaUrl", required = false) String portadaUrl,
             @RequestParam("idUser")String idUser)
             throws CursoNotFoundException, CursoExistsException, TemaNotFoundException, TemaExistsException,
             IOException, NotAnImageFileException {
@@ -90,7 +90,6 @@ public class TemaResource {
     }
 
     @DeleteMapping("/delete/{nombreCurso}/{titulo}")
-    @PreAuthorize("hasAnyAuthority('user:delete')")
     public ResponseEntity<HttpResponse> deleteCurso(@PathVariable("nombreCurso") String nombreCurso,
             @PathVariable("titulo") String titulo)
             throws IOException, CursoNotFoundException, CursoExistsException, TemaNotFoundException {

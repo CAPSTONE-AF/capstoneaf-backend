@@ -9,6 +9,7 @@ import javax.mail.MessagingException;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import upn.proj.sowad.dto.UserDto;
 import upn.proj.sowad.entities.Grado;
 import upn.proj.sowad.entities.GradoPopulation;
 import upn.proj.sowad.entities.User;
@@ -20,17 +21,19 @@ import upn.proj.sowad.exception.domain.UsernameExistException;
 
 public interface UserService {
 
-    User register(String firstName, String lastName, String username, String email, String password, Long idGrado) throws UserNotFoundException, UsernameExistException, EmailExistException, MessagingException;
+    UserDto register(String firstName, String lastName, String username, String email, String password, Long idGrado) throws UserNotFoundException, UsernameExistException, EmailExistException, MessagingException;
 
     List<User> getUsers();
 
     User findUserByUsername(String username);
 
+    UserDto findUserDtoByUsername(String username);
+
     User findUserByEmail(String email);
 
-    User addNewUser(String firstName, String lastName, String username, String email, String role, boolean isNonLocked, boolean isActive, MultipartFile profileImage) throws UserNotFoundException, UsernameExistException, EmailExistException, IOException, NotAnImageFileException;
+    UserDto addNewUser(String firstName, String lastName, String username, String email, String password) throws UserNotFoundException, UsernameExistException, EmailExistException, IOException, NotAnImageFileException;
 
-    User updateUser(String currentUsername, String newFirstName, String newLastName, String newUsername, String newEmail, String role, boolean isNonLocked, boolean isActive, MultipartFile profileImage) throws UserNotFoundException, UsernameExistException, EmailExistException, IOException, NotAnImageFileException;
+    UserDto updateUser(String currentUsername, String newFirstName, String newLastName, String newUsername, String newEmail, String profileImageUrl, Long idGrado, String role, String isActive, String isNonLocked) throws UserNotFoundException, UsernameExistException, EmailExistException, IOException, NotAnImageFileException;
 
     void deleteUser(String username) throws IOException;
 
@@ -41,4 +44,6 @@ public interface UserService {
     List<GradoPopulation> buscarUsuariosInscritosPorGrado();
 
     ByteArrayInputStream exportarBarchartDeNumUsuByGrado(BufferedImage bufferedImage);
+
+    Grado getGradoByUser(Long idUser);
 }

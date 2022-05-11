@@ -1,5 +1,6 @@
 package upn.proj.sowad.services.impl;
 
+import upn.proj.sowad.dto.UserDto;
 import upn.proj.sowad.entities.Grado;
 import upn.proj.sowad.entities.GradoPopulation;
 import upn.proj.sowad.entities.User;
@@ -27,7 +28,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.io.ByteArrayOutputStream;
-import java.util.stream.Stream;
 
 import javax.imageio.ImageIO;
 
@@ -36,14 +36,10 @@ import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
-import com.itextpdf.text.Font;
 import com.itextpdf.text.FontFactory;
 import com.itextpdf.text.Image;
 import com.itextpdf.text.PageSize;
 import com.itextpdf.text.Paragraph;
-import com.itextpdf.text.Phrase;
-import com.itextpdf.text.pdf.PdfPCell;
-import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 
 import javax.annotation.Resource;
@@ -105,8 +101,30 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         }
     }
 
+    private UserDto usertToUserDto(User user){
+        UserDto resp = new UserDto();
+        resp.setId(user.getId());
+        resp.setUsername(user.getUsername());
+        resp.setActive(user.isActive());
+        resp.setAuthorities(user.getAuthorities());
+        resp.setEmail(user.getEmail());
+        resp.setFirstName(user.getFirstName());
+        resp.setLastName(user.getLastName());
+        resp.setUserId(user.getUserId());
+        resp.setJoinDate(user.getJoinDate());
+        resp.setRole(user.getRole());
+        resp.setPassword(user.getPassword());
+        resp.setNotLocked(user.isNotLocked());
+        resp.setLastLoginDate(user.getLastLoginDate());
+        resp.setProfileImageUrl(user.getProfileImageUrl());
+        resp.setLastLoginDateDisplay(user.getLastLoginDateDisplay());
+        if (user.getGrado()!=null)
+            resp.setIdGrado(user.getGrado().getIdGrado());
+        return resp;
+    }
+
     @Override
-    public User register(String firstName, String lastName, String username, String email, String password, Long idGrado) throws UserNotFoundException, UsernameExistException, EmailExistException, MessagingException {
+    public UserDto register(String firstName, String lastName, String username, String email, String password, Long idGrado) throws UserNotFoundException, UsernameExistException, EmailExistException, MessagingException {
         if(LOGGER.isInfoEnabled())
             LOGGER.info("Entering 'register' method");
         validateNewUsernameAndEmail(EMPTY, username, email);
@@ -128,14 +146,15 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         userRepository.save(user);
 
        //emailSerice.sendNewPasswordEmail(firstName, password, email);v
-        return user;
+        return this.usertToUserDto(user);
     }
 
     @Override
-    public User addNewUser(String firstName, String lastName, String username, String email, String role, boolean isNonLocked, boolean isActive, MultipartFile profileImage) throws UserNotFoundException, UsernameExistException, EmailExistException, IOException, NotAnImageFileException {
+    public UserDto addNewUser(String firstName, String lastName, String username, String email, String password) throws UserNotFoundException, UsernameExistException, EmailExistException, IOException, NotAnImageFileException {
+        if(LOGGER.isInfoEnabled())
+            LOGGER.info("Entering 'addNewUser' method");
         validateNewUsernameAndEmail(EMPTY, username, email);
         User user = new User();
-        String password = generatePassword();
         user.setUserId(generateUserId());
         user.setFirstName(firstName);
         user.setLastName(lastName);
@@ -143,31 +162,37 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         user.setUsername(username);
         user.setEmail(email);
         user.setPassword(encodePassword(password));
-        user.setActive(isActive);
-        user.setNotLocked(isNonLocked);
-        user.setRole(getRoleEnumName(role).name());
-        user.setAuthorities(getRoleEnumName(role).getAuthorities());
+        user.setActive(true);
+        user.setNotLocked(true);
+        user.setRole(ROLE_USER.name());
+        user.setAuthorities(ROLE_USER.getAuthorities());
         user.setProfileImageUrl(getTemporaryProfileImageUrl(username));
         userRepository.save(user);
-        saveProfileImage(user, profileImage);
-        LOGGER.info("New user password: " + password);
-        return user;
+        return this.usertToUserDto(user);
     }
 
     @Override
-    public User updateUser(String currentUsername, String newFirstName, String newLastName, String newUsername, String newEmail, String role, boolean isNonLocked, boolean isActive, MultipartFile profileImage) throws UserNotFoundException, UsernameExistException, EmailExistException, IOException, NotAnImageFileException {
+    public UserDto updateUser(String currentUsername, String newFirstName, String newLastName, String newUsername, String newEmail, String profileImageUrl, Long idGrado, String role, String isActive, String isNonLocked) throws UserNotFoundException, UsernameExistException, EmailExistException, IOException, NotAnImageFileException {
         User currentUser = validateNewUsernameAndEmail(currentUsername, newUsername, newEmail);
         currentUser.setFirstName(newFirstName);
         currentUser.setLastName(newLastName);
         currentUser.setUsername(newUsername);
         currentUser.setEmail(newEmail);
-        currentUser.setActive(isActive);
-        currentUser.setNotLocked(isNonLocked);
-        currentUser.setRole(getRoleEnumName(role).name());
-        currentUser.setAuthorities(getRoleEnumName(role).getAuthorities());
+        if(profileImageUrl!=null && !profileImageUrl.isEmpty())
+            currentUser.setProfileImageUrl(profileImageUrl);
+        if(idGrado!=null)
+            currentUser.setGrado(this.gradoService.getGradyById(idGrado));
+        if(role!=null){
+            currentUser.setRole(getRoleEnumName(role).name());
+            currentUser.setAuthorities(getRoleEnumName(role).getAuthorities());
+        }
+        if(isActive!=null)
+            currentUser.setActive(Boolean.parseBoolean(isActive));
+        if(isNonLocked!=null)
+            currentUser.setNotLocked(Boolean.parseBoolean(isNonLocked));
+
         userRepository.save(currentUser);
-        saveProfileImage(currentUser, profileImage);
-        return currentUser;
+        return this.usertToUserDto(currentUser);
     }
 
     @Override
@@ -232,6 +257,16 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
+    public Grado getGradoByUser(Long idUser) {
+        Optional<User> user = this.userRepository.findById(idUser);
+        if(user.isPresent()){
+            Grado grado = user.get().getGrado();
+            return grado;
+        }
+        return null;
+    }
+
+    @Override
     public List<User> getUsers() {
         return userRepository.findAll();
     }
@@ -239,6 +274,12 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Override
     public User findUserByUsername(String username) {
         return userRepository.findUserByUsername(username);
+    }
+
+    @Override
+    public UserDto findUserDtoByUsername(String username) {
+        User userFound = userRepository.findUserByUsername(username);
+        return this.usertToUserDto(userFound);
     }
 
     @Override

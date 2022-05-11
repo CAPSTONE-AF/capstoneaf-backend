@@ -14,5 +14,5 @@ public class FileConstant {
     public static final String FORWARD_SLASH = "/";
     public static final String NOT_AN_IMAGE_FILE = " is not an image file. Please upload an image file";
     public static final String TEMP_PROFILE_IMAGE_BASE_URL = "https://robohash.org/";
-    public static final String TEMP_PORTADA_IMAGE_BASE_URL = "https://dummyimage.com/135x135/000/ffffff.jpg&text=";
+    public static final String TEMP_PORTADA_IMAGE_BASE_URL = "https://plchldr.co/i/135x135?&bg=11111&fc=ffffff&text=";
 }
