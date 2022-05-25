@@ -15,8 +15,8 @@ import static upn.proj.sowad.constant.FileConstant.JPG_EXTENSION;
 import static upn.proj.sowad.constant.FileConstant.NOT_AN_IMAGE_FILE;
 import static upn.proj.sowad.constant.FileConstant.TEMA_FOLDER;
 import static upn.proj.sowad.constant.FileConstant.TEMA_IMAGE_PATH;
-import static upn.proj.sowad.constant.TemaImplConstant.NO_TEMA_FOUND_BY_TITULO;
-import static upn.proj.sowad.constant.TemaImplConstant.TITULO_ALREADY_EXISTS;
+import static upn.proj.sowad.constant.TemaImplConstant.*;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -38,17 +38,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import upn.proj.sowad.constant.QuizConstant;
 import upn.proj.sowad.dao.CursoRepository;
 import upn.proj.sowad.dao.TemaRepository;
 import upn.proj.sowad.dao.UserRepository;
+import upn.proj.sowad.dto.QuizDto;
 import upn.proj.sowad.entities.Curso;
 import upn.proj.sowad.entities.Tema;
 import upn.proj.sowad.entities.User;
-import upn.proj.sowad.exception.domain.CursoExistsException;
-import upn.proj.sowad.exception.domain.CursoNotFoundException;
-import upn.proj.sowad.exception.domain.NotAnImageFileException;
-import upn.proj.sowad.exception.domain.TemaExistsException;
-import upn.proj.sowad.exception.domain.TemaNotFoundException;
+import upn.proj.sowad.exception.domain.*;
 import upn.proj.sowad.services.TemaService;
 
 @Service
@@ -212,6 +210,25 @@ public class TemaServiceImpl implements TemaService{
 	@Override
 	public Tema getTemaById(String idTema) {
 		return this.temaRepository.findByIdTema(Long.parseLong(idTema));
+	}
+
+	@Override
+	public boolean validateIDTema(String idTema) throws UtilityException {
+		Long idTemaTmp = null;
+		if (idTema == null)
+			throw new UtilityException(TEMA_NOT_ENTERED);
+		if (idTema != null && idTema.isEmpty())
+			throw new UtilityException(TEMA_NOT_ENTERED);
+		if (idTema != null && !idTema.isEmpty()) {
+			try {
+				idTemaTmp = Long.parseLong(idTema);
+			} catch (NumberFormatException exception) {
+				throw new UtilityException(ID_TEMA_IS_NOT_A_NUMBER);
+			}
+		}
+		if(idTemaTmp!=null && this.temaRepository.findByIdTema(idTemaTmp) == null)
+			throw new UtilityException(TEMA_NOT_FOUND);
+		return true;
 	}
 
 

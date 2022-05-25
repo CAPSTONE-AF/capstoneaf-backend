@@ -1,8 +1,6 @@
 package upn.proj.sowad.entities;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -47,6 +45,10 @@ public class Tema {
 	
 	@Column(name="portada_url")
 	private String portadaUrl;
+
+	@OneToMany(mappedBy = "tema",cascade = CascadeType.ALL)
+	@JsonIgnore
+	private List<Quiz> quizzes;
 
 	@ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST},
 			fetch = FetchType.LAZY)
@@ -159,5 +161,13 @@ public class Tema {
 
 	public void setAvances(List<Avance> avances) {
 		this.avances = avances;
+	}
+
+	public List<Quiz> getQuizzes() {
+		return quizzes;
+	}
+
+	public void setQuizzes(List<Quiz> quizzes) {
+		this.quizzes = quizzes;
 	}
 }
