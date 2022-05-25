@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static upn.proj.sowad.constant.UserImplConstant.*;
 
 @SpringBootTest
@@ -36,13 +37,48 @@ public class UserTest {
             if(this.userService.findUserByUsername("johndoe")!=null)
                 this.userService.deleteUser("johndoe");
             this.userService.register("John", "Doe", "johndoe", "johndoe@gmail.com", "johndoe", null);
-            this.userService.register("John", "Doe", "johndoe", "johndoe@gmail.com", "johndoe", null);
+            this.userService.register("Ben", "Walmart", "johndoe", "benwalmart@gmail.com", "benwalmart", null);
         } catch (UsernameExistException | UserNotFoundException | EmailExistException | MessagingException | IOException e) {
             realMessage = e.getMessage();
         }
 
         assertEquals(expectedMessage,realMessage);
     }
+
+    @Test
+    public void registerUser_whenEmailIsAlreadyRegistered_recieveException(){
+        String expectedMessage = EMAIL_ALREADY_EXISTS;
+        String realMessage = "";
+        try {
+            if(this.userService.findUserByUsername("johndoe")!=null)
+                this.userService.deleteUser("johndoe");
+            this.userService.register("John", "Doe", "johndoe", "johndoe@gmail.com", "johndoe", null);
+            this.userService.register("Ben", "Walmart", "benwalmart", "johndoe@gmail.com", "benwalmart", null);
+        } catch (UsernameExistException | UserNotFoundException | EmailExistException | MessagingException | IOException e) {
+            realMessage = e.getMessage();
+        }
+
+        assertEquals(expectedMessage,realMessage);
+    }
+
+    @Test
+    public void registerUser_whenRegistered_passwordIsEncrypted() throws UserNotFoundException, EmailExistException, MessagingException, UsernameExistException, IOException {
+        String realMessage = "";
+        User userNotSaved = new User();
+        userNotSaved.setFirstName("John");
+        userNotSaved.setLastName("Doe");
+        userNotSaved.setUsername("johndoe");
+        userNotSaved.setEmail("johndoe@gmail.com");
+        userNotSaved.setPassword("johndoe");
+        UserDto savedUser;
+        if(this.userService.findUserByUsername("johndoe")!=null)
+            this.userService.deleteUser("johndoe");
+        savedUser = this.userService.register(userNotSaved.getFirstName(),
+                userNotSaved.getLastName(), userNotSaved.getUsername(), userNotSaved.getEmail(), userNotSaved.getPassword(), null);
+        assertNotEquals(userNotSaved.getPassword(),savedUser.getPassword());
+    }
+
+
 
     
 }
