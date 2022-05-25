@@ -1,10 +1,8 @@
 package upn.proj.sowad.services.impl;
 
+import upn.proj.sowad.constant.ResultConstant;
 import upn.proj.sowad.dto.UserDto;
-import upn.proj.sowad.entities.Grado;
-import upn.proj.sowad.entities.GradoPopulation;
-import upn.proj.sowad.entities.User;
-import upn.proj.sowad.entities.UserPrincipal;
+import upn.proj.sowad.entities.*;
 import upn.proj.sowad.enumeration.Role;
 import upn.proj.sowad.exception.domain.*;
 import upn.proj.sowad.dao.UserRepository;
@@ -277,6 +275,16 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
+    public User findByID(String id) {
+        Optional<User> foundUser = this.userRepository.findById(Long.valueOf(id));
+
+        if(foundUser.isPresent()) {
+            return foundUser.get();
+        }
+        return null;
+    }
+
+    @Override
     public UserDto findUserDtoByUsername(String username) {
         User userFound = userRepository.findUserByUsername(username);
         return this.usertToUserDto(userFound);
@@ -374,6 +382,30 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             }
             return null;
         }
+    }
+
+    @Override
+    public boolean validateIdUser(String idUser) throws UtilityException {
+        Long idUserTemp = null;
+        if (idUser == null)
+            throw new UtilityException(ResultConstant.RESULT_NOT_ENTERED);
+        if (idUser != null && idUser.isEmpty())
+            throw new UtilityException(ResultConstant.RESULT_NOT_ENTERED);
+        if (idUser != null && !idUser.isEmpty()) {
+            try {
+                idUserTemp = Long.parseLong(idUser);
+            } catch (NumberFormatException exception) {
+                throw new UtilityException(ResultConstant.ID_RESULT_IS_NOT_A_NUMBER);
+            }
+        }
+        if(idUserTemp!=null){
+            Optional<User> foundUser = this.userRepository.findById(idUserTemp);
+
+            if(!foundUser.isPresent()) {
+                throw new UtilityException(ResultConstant.RESULT_NOT_FOUND);
+            }
+        }
+        return true;
     }
 
 }

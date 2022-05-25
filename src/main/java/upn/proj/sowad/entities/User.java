@@ -44,6 +44,10 @@ public class User implements Serializable {
     @JsonIgnore
 	private List<Avance> avances;
 
+    @OneToMany(cascade = {CascadeType.ALL},mappedBy="user")
+    @JsonIgnore
+    private List<Result> results;
+
     public User(){
     	this.avances = new ArrayList<>();
     }
@@ -205,5 +209,13 @@ public class User implements Serializable {
 
     public void setAvances(List<Avance> avances) {
         this.avances = avances;
+    }
+
+    public List<Result> getResults() {
+        return results;
+    }
+
+    public void setResults(List<Result> results) {
+        this.results = results;
     }
 }

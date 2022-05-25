@@ -7,11 +7,7 @@ import java.util.List;
 import org.springframework.web.multipart.MultipartFile;
 
 import upn.proj.sowad.entities.Tema;
-import upn.proj.sowad.exception.domain.CursoExistsException;
-import upn.proj.sowad.exception.domain.CursoNotFoundException;
-import upn.proj.sowad.exception.domain.NotAnImageFileException;
-import upn.proj.sowad.exception.domain.TemaExistsException;
-import upn.proj.sowad.exception.domain.TemaNotFoundException;
+import upn.proj.sowad.exception.domain.*;
 
 public interface TemaService {
 
@@ -28,4 +24,6 @@ public interface TemaService {
     Tema updatePortadaImage(String nombreCurso, String titulo, MultipartFile portadaImage) throws CursoNotFoundException, CursoExistsException, TemaNotFoundException, TemaExistsException, IOException, NotAnImageFileException;
 
     Tema getTemaById(String idTema);
+
+    boolean validateIDTema(String idTema) throws UtilityException;
 }

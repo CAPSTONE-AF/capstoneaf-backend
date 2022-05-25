@@ -13,11 +13,7 @@ import upn.proj.sowad.dto.UserDto;
 import upn.proj.sowad.entities.Grado;
 import upn.proj.sowad.entities.GradoPopulation;
 import upn.proj.sowad.entities.User;
-import upn.proj.sowad.exception.domain.EmailExistException;
-import upn.proj.sowad.exception.domain.EmailNotFoundException;
-import upn.proj.sowad.exception.domain.NotAnImageFileException;
-import upn.proj.sowad.exception.domain.UserNotFoundException;
-import upn.proj.sowad.exception.domain.UsernameExistException;
+import upn.proj.sowad.exception.domain.*;
 
 public interface UserService {
 
@@ -26,6 +22,8 @@ public interface UserService {
     List<User> getUsers();
 
     User findUserByUsername(String username);
+
+    User findByID(String id);
 
     UserDto findUserDtoByUsername(String username);
 
@@ -46,4 +44,6 @@ public interface UserService {
     ByteArrayInputStream exportarBarchartDeNumUsuByGrado(BufferedImage bufferedImage);
 
     Grado getGradoByUser(Long idUser);
+
+    boolean validateIdUser(String idUser) throws UtilityException;
 }
