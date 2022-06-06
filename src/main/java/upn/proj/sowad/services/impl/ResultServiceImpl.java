@@ -44,6 +44,7 @@ public class ResultServiceImpl implements ResultService {
     private QuizService quizService;
 
 
+
     @Autowired
     public ResultServiceImpl(ResultRepository resultRepository, UtilityService utilityService, UserService userService, QuizService quizService) {
         this.resultRepository = resultRepository;
@@ -130,8 +131,8 @@ public class ResultServiceImpl implements ResultService {
     }
 
     @Override
-    public ResultDto gradeQuiz(String idUser, String idQuiz) throws UtilityException {
-        Result result = this.getResultModelByIdUserAndIdQuiz(idUser, idQuiz);
+    public ResultDto gradeQuiz(String idResult) throws UtilityException {
+        Result result = this.findByIdResult(idResult);
         if (result != null) {
             List<Answer> answers = result.getAnswers();
             Double scoreObtenido = 0.0;
@@ -154,6 +155,29 @@ public class ResultServiceImpl implements ResultService {
             return this.convertResultModelToResultDto(this.resultRepository.save(result));
         } else
             throw new UtilityException(QuizConstant.QUIZ_NOT_SUBMITED_YET);
+    }
+
+    @Override
+    public List<ResultDto> findaAllByUserId(String idUser) throws UtilityException {
+
+        if(this.userService.validateIdUser(idUser)){
+
+            List<ResultDto> response = new ArrayList<>();
+
+            User userFound = this.userService.findByID(idUser);
+            List<Result> resultsByUserId = this.resultRepository.findAllByUserOrderBySubmitDateDesc(userFound);
+
+            for(Result resultTemp : resultsByUserId){
+                if(resultTemp.getResultScore()!=null)
+                    response.add(this.convertResultModelToResultDto(resultTemp));
+            }
+
+            return response;
+
+        }
+
+        return null;
+
     }
 
 }

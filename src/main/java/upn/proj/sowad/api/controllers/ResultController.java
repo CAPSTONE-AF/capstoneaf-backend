@@ -15,6 +15,8 @@ import upn.proj.sowad.services.ResultService;
 
 import javax.annotation.Resource;
 
+import java.util.List;
+
 import static org.springframework.http.HttpStatus.OK;
 
 @RestController
@@ -38,6 +40,13 @@ public class ResultController {
         return new ResponseEntity<>(this.resultService.createNewResult(resultDto), OK);
     }
 
+    @GetMapping("/list/{idUser}")
+    public ResponseEntity<List<ResultDto>> findaAllByUserId(@PathVariable("idUser") String idUser) throws UtilityException {
+        if(log.isInfoEnabled())
+            log.info("Entering 'createNewResult' method");
+        return new ResponseEntity<>(this.resultService.findaAllByUserId(idUser), OK);
+    }
+
     @GetMapping("/find/{idUser}/{idQuiz}")
     public ResponseEntity<ResultDto> getResultByIdUserAndIdQuiz(@PathVariable("idUser") String idUser, @PathVariable("idQuiz") String idQuiz) throws UtilityException {
         if(log.isInfoEnabled())
@@ -46,11 +55,11 @@ public class ResultController {
         return new ResponseEntity<>(resultDto, OK);
     }
 
-    @PostMapping("/grade/{idUser}/{idQuiz}")
-    public ResponseEntity<ResultDto> gradeQuiz(@PathVariable("idUser") String idUser, @PathVariable("idQuiz") String idQuiz) throws UtilityException {
+    @PostMapping("/grade/{idResult}")
+    public ResponseEntity<ResultDto> gradeQuiz(@PathVariable("idResult") String idResult) throws UtilityException {
         if(log.isInfoEnabled())
             log.info("Entering 'gradeQuiz' method");
-        return new ResponseEntity<>(this.resultService.gradeQuiz(idUser,idQuiz), OK);
+        return new ResponseEntity<>(this.resultService.gradeQuiz(idResult), OK);
     }
 
 }

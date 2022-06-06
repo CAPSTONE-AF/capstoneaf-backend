@@ -68,7 +68,7 @@ public class AvanceServiceImpl implements AvanceService {
         if(log.isInfoEnabled())
             log.info("Entering 'getAvancesByUserId' method");
         List<AvanceDto> respuesta = new ArrayList<>();
-        List<Avance> avanceListByUser = this.avanceRepository.findAllByUserId(Long.parseLong(idUser));
+        List<Avance> avanceListByUser = this.avanceRepository.findAllByUserIdOrderByFechaCreacionDesc(Long.parseLong(idUser));
         Iterator<Avance> iterator = avanceListByUser.iterator();
         while(iterator.hasNext()){
             AvanceDto currentAvanceDto = new AvanceDto();

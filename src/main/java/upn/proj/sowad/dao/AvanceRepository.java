@@ -11,7 +11,7 @@ public interface AvanceRepository extends JpaRepository<Avance, Long> {
 
     Avance findByIdAvance(Long idAvance);
 
-    List<Avance> findAllByUserId(Long idUser);
+    List<Avance> findAllByUserIdOrderByFechaCreacionDesc(Long idUser);
 
     Avance findByUserAndTema(User user, Tema tema);
 

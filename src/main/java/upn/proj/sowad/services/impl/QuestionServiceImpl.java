@@ -65,7 +65,8 @@ public class QuestionServiceImpl implements QuestionService {
         List<Question> questionsOfQuizFound = this.questionRepository.findAllByQuiz(quizFound);
         if(questionsOfQuizFound.size() < 4)
             return true;
-        return false;
+        else
+            throw new UtilityException("Se alcanzó el máximo de preguntas");
     }
 
     private boolean validateQuestionDto(QuestionDto questionDto) throws UtilityException {
