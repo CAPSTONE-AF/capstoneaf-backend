@@ -31,40 +31,22 @@ public class QuizTest {
     @Test
     public void registerExamen_whenTemaDoesNotExist() {
         String nombreCursoTest = "matematicasss";
-        String nombreTemaTest = "sumas";
         String expectedMessage = TEMA_NOT_FOUND;
         String realMessage = "";
         try {
             QuizDto quizDto = new QuizDto();
 
-            Tema temaFound = new Tema();
-
             quizDto.setTitle("Examen 1");
             quizDto.setDescription("Unit Test");
 
-            if (this.cursoService.findCursoByNombre(nombreCursoTest) == null)
-                this.cursoService.addNewCurso(nombreCursoTest, "1");
-
-            if (this.temaService.findTemaByTitulo(nombreCursoTest, nombreTemaTest) == null)
-                temaFound = this.temaService.addNewTema(nombreCursoTest, nombreTemaTest, "", "1");
-            else {
-                this.temaService.deleteTema(nombreCursoTest, nombreTemaTest);
-                temaFound = this.temaService.addNewTema(nombreCursoTest, nombreTemaTest, "", "1");
-            }
-
-            quizDto.setIdTema(temaFound.getIdTema().toString());
+            quizDto.setIdTema("999999999"); //este idTema no existe
 
             this.quizService.registerNewQuiz(quizDto);
 
-        } catch (CursoExistsException | CursoNotFoundException | UtilityException | TemaNotFoundException | IOException | NotAnImageFileException | TemaExistsException e) {
+        } catch ( UtilityException e) {
             realMessage = e.getMessage();
         }
 
-        try {
-            this.cursoService.deleteCurso(nombreCursoTest);
-        } catch (UtilityException e) {
-            e.getMessage();
-        }
 
         assertEquals(expectedMessage, realMessage);
     }
