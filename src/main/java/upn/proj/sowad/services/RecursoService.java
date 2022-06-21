@@ -15,7 +15,7 @@ public interface RecursoService {
 
     Recurso updateRecurso(String nombreCurso, String tituloTema, String currentNombre, String newNombre, String tipo, String contenido) throws CursoNotFoundException, TemaNotFoundException, CursoExistsException, TemaExistsException, RecursoNotFoundException, RecursoExistsException;
 
-    void deleteRecurso(String nombreCurso, String tituloTema, String nombre) throws TemaNotFoundException, CursoNotFoundException;
+    void deleteRecurso(String nombreCurso, String tituloTema, String nombre) throws TemaNotFoundException, CursoNotFoundException, UtilityException;
 
 	
 }

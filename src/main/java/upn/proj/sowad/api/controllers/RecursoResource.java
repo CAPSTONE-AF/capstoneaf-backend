@@ -73,7 +73,7 @@ public class RecursoResource {
 	@DeleteMapping("/delete/{nombreCurso}/{tituloTema}/{nombre}")
     public ResponseEntity<HttpResponse> deleteCurso(@PathVariable("nombreCurso") String nombreCurso,
     									@PathVariable("tituloTema") String tituloTema,
-    									@PathVariable("nombre") String nombre) throws IOException, CursoNotFoundException, CursoExistsException, RecursoNotFoundException, TemaNotFoundException {
+    									@PathVariable("nombre") String nombre) throws IOException, CursoNotFoundException, CursoExistsException, RecursoNotFoundException, TemaNotFoundException, UtilityException {
         recursoService.deleteRecurso(nombreCurso,tituloTema,nombre);
         return response(OK, RECURSO_DELETED_SUCCESSFULLY);
     }

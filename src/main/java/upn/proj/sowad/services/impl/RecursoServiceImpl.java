@@ -148,11 +148,18 @@ public class RecursoServiceImpl implements RecursoService{
 	}
 
 	@Override
-	public void deleteRecurso(String nombreCurso, String tituloTema, String nombre) throws TemaNotFoundException, CursoNotFoundException {
-		Curso curso = cursoRepository.findCursoByNombre(nombreCurso);
-		Tema tema = temaRepository.findTemaByTitulo(tituloTema);
-		Recurso recurso = findRecursoByNombre(nombreCurso,tituloTema,nombre);
-        recursoRepository.deleteById(recurso.getIdRecurso());	
+	public void deleteRecurso(String nombreCurso, String tituloTema, String nombre) throws TemaNotFoundException, CursoNotFoundException, UtilityException {
+		if(nombre!=null && !nombre.isEmpty()){
+			Curso curso = cursoRepository.findCursoByNombre(nombreCurso);
+			Tema tema = temaRepository.findTemaByTitulo(tituloTema);
+			Recurso recurso = findRecursoByNombre(nombreCurso,tituloTema,nombre);
+			if(recurso!=null)
+				recursoRepository.deleteById(recurso.getIdRecurso());
+			else
+				throw new UtilityException(NO_RECURSO_FOUND_BY_NOMBRE);
+		}else
+			throw new UtilityException(NO_RECURSO_FOUND_BY_NOMBRE);
+
 	}
 	
 	public Recurso validateNewNombre(String nombreCurso, String tituloTema, String currentNombre, String newNombre) throws CursoNotFoundException, CursoExistsException, TemaNotFoundException, TemaExistsException, RecursoNotFoundException, RecursoExistsException {

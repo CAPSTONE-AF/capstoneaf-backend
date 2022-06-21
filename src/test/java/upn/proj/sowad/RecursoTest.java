@@ -16,6 +16,7 @@ import java.io.IOException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static upn.proj.sowad.constant.CursoImplConstant.CURSO_HAS_NO_TITLE;
 import static upn.proj.sowad.constant.CursoImplConstant.NO_CURSO_FOUND_BY_NOMBRE;
+import static upn.proj.sowad.constant.RecursoImplConstant.NO_RECURSO_FOUND_BY_NOMBRE;
 import static upn.proj.sowad.constant.TemaImplConstant.NO_TEMA_FOUND_BY_TITULO;
 
 @SpringBootTest
@@ -216,6 +217,40 @@ public class RecursoTest {
 
             this.recursoService.addNewRecurso(nombreCursoTest, nombreTemaTest, nombreRecursoTest, "txt", "bien");
         } catch (TemaNotFoundException | CursoNotFoundException | CursoExistsException | TemaExistsException | RecursoNotFoundException | RecursoExistsException | UtilityException | IOException e) {
+            realMessage = e.getMessage();
+        }
+
+        try {
+            this.cursoService.deleteCurso(nombreCursoTest);
+        } catch (UtilityException e) {
+            e.getMessage();
+        }
+
+        assertEquals(expectedMessage, realMessage);
+    }
+
+
+    @Test
+    public void deleteRecurso_whenTitleNotExist() {
+        String nombreCursoTest = "matematicasss";
+        String nombreTemaTest = "sumas";
+        String nombreRecursoTest = "mate";
+        String expectedMessage = NO_RECURSO_FOUND_BY_NOMBRE;
+        String realMessage = "";
+
+        try {
+
+            if (this.cursoService.findCursoByNombre(nombreCursoTest) == null)
+                this.cursoService.addNewCurso(nombreCursoTest, "1");
+
+            if (this.temaService.findTemaByTitulo(nombreCursoTest, nombreTemaTest) == null)
+                this.temaService.addNewTema(nombreCursoTest, nombreTemaTest,"","1");
+
+            if (this.recursoService.findRecursoByNombre(nombreCursoTest, nombreTemaTest,nombreRecursoTest) != null)
+                this.recursoService.deleteRecurso(nombreCursoTest, nombreTemaTest,nombreRecursoTest);
+
+            this.recursoService.deleteRecurso(nombreCursoTest, nombreTemaTest, nombreRecursoTest);
+        } catch (TemaNotFoundException | CursoNotFoundException | CursoExistsException | TemaExistsException | UtilityException | IOException | NotAnImageFileException e) {
             realMessage = e.getMessage();
         }
 
