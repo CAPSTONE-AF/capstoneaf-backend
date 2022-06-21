@@ -31,14 +31,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import upn.proj.sowad.entities.HttpResponse;
 import upn.proj.sowad.entities.Tema;
-import upn.proj.sowad.exception.domain.CursoExistsException;
-import upn.proj.sowad.exception.domain.CursoNotFoundException;
-import upn.proj.sowad.exception.domain.EmailExistException;
-import upn.proj.sowad.exception.domain.NotAnImageFileException;
-import upn.proj.sowad.exception.domain.TemaExistsException;
-import upn.proj.sowad.exception.domain.TemaNotFoundException;
-import upn.proj.sowad.exception.domain.UserNotFoundException;
-import upn.proj.sowad.exception.domain.UsernameExistException;
+import upn.proj.sowad.exception.domain.*;
 import upn.proj.sowad.services.TemaService;
 
 @RestController
@@ -73,7 +66,7 @@ public class TemaResource {
             @RequestParam(value = "portadaUrl", required = false)String portadaUrl,
             @RequestParam("idUser")String idUser)
             throws IOException, NotAnImageFileException, CursoNotFoundException, CursoExistsException,
-            TemaNotFoundException, TemaExistsException {
+            TemaNotFoundException, TemaExistsException, UtilityException {
         Tema newTema = temaService.addNewTema(nombreCurso, titulo, portadaUrl,idUser);
         return new ResponseEntity<>(newTema, OK);
     }
@@ -84,7 +77,7 @@ public class TemaResource {
             @RequestParam(value = "portadaUrl", required = false) String portadaUrl,
             @RequestParam("idUser")String idUser)
             throws CursoNotFoundException, CursoExistsException, TemaNotFoundException, TemaExistsException,
-            IOException, NotAnImageFileException {
+            IOException, NotAnImageFileException, UtilityException {
         Tema updatedTema = temaService.updateTema(nombreCurso, currentTitulo, titulo, portadaUrl,idUser);
         return new ResponseEntity<>(updatedTema, OK);
     }
@@ -92,7 +85,7 @@ public class TemaResource {
     @DeleteMapping("/delete/{nombreCurso}/{titulo}")
     public ResponseEntity<HttpResponse> deleteCurso(@PathVariable("nombreCurso") String nombreCurso,
             @PathVariable("titulo") String titulo)
-            throws IOException, CursoNotFoundException, CursoExistsException, TemaNotFoundException {
+            throws IOException, CursoNotFoundException, CursoExistsException, TemaNotFoundException, UtilityException {
         temaService.deleteTema(nombreCurso, titulo);
         return response(OK, TEMA_DELETED_SUCCESSFULLY);
     }
@@ -102,7 +95,7 @@ public class TemaResource {
             @RequestParam("titulo") String titulo, @RequestParam(value = "portadaImage") MultipartFile portadaImage)
             throws UserNotFoundException, UsernameExistException, EmailExistException, IOException,
             NotAnImageFileException, CursoNotFoundException, CursoExistsException, TemaNotFoundException,
-            TemaExistsException {
+            TemaExistsException, UtilityException {
         Tema tema = temaService.updatePortadaImage(nombreCurso, titulo, portadaImage);
         return new ResponseEntity<>(tema, OK);
     }

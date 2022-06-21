@@ -27,12 +27,7 @@ import upn.proj.sowad.dao.TemaRepository;
 import upn.proj.sowad.entities.Curso;
 import upn.proj.sowad.entities.Recurso;
 import upn.proj.sowad.entities.Tema;
-import upn.proj.sowad.exception.domain.CursoExistsException;
-import upn.proj.sowad.exception.domain.CursoNotFoundException;
-import upn.proj.sowad.exception.domain.RecursoExistsException;
-import upn.proj.sowad.exception.domain.RecursoNotFoundException;
-import upn.proj.sowad.exception.domain.TemaExistsException;
-import upn.proj.sowad.exception.domain.TemaNotFoundException;
+import upn.proj.sowad.exception.domain.*;
 import upn.proj.sowad.services.RecursoService;
 
 @Service
@@ -55,20 +50,24 @@ public class RecursoServiceImpl implements RecursoService{
 	
 	
 	@Override
-	public List<Recurso> getRecursos(String nombreCurso, String tituloTema) throws TemaNotFoundException, CursoNotFoundException {
+	public List<Recurso> getRecursos(String nombreCurso, String tituloTema) throws TemaNotFoundException, CursoNotFoundException, UtilityException {
 		List<Recurso> recursosRequeridos = null;
-		Curso curso = cursoRepository.findCursoByNombre(nombreCurso);
-		Tema tema = temaRepository.findTemaByTitulo(tituloTema);
-		if(curso!=null) {
-			if(tema!=null) {
-				recursosRequeridos = recursoRepository.findAllByTema(tema);
+		if(nombreCurso!=null && !nombreCurso.isEmpty()){
+			Curso curso = cursoRepository.findCursoByNombre(nombreCurso);
+			Tema tema = temaRepository.findTemaByTitulo(tituloTema);
+			if(curso!=null) {
+				if(tema!=null) {
+					recursosRequeridos = recursoRepository.findAllByTema(tema);
+				}
+				else {
+					throw new TemaNotFoundException(NO_TEMA_FOUND_BY_TITULO + tituloTema);
+				}
+			} else {
+				throw new CursoNotFoundException(NO_CURSO_FOUND_BY_NOMBRE + nombreCurso);
 			}
-			else {
-				throw new TemaNotFoundException(NO_TEMA_FOUND_BY_TITULO + tituloTema);
-			}
-		} else {
-			throw new CursoNotFoundException(NO_CURSO_FOUND_BY_NOMBRE + nombreCurso);
-		}
+		}else
+			throw new UtilityException(CURSO_HAS_NO_TITLE);
+
 		return recursosRequeridos;
 	}
 
@@ -92,7 +91,7 @@ public class RecursoServiceImpl implements RecursoService{
 	}
 
 	@Override
-	public Recurso addNewRecurso(String nombreCurso, String tituloTema, String nombre, String tipo, String contenido) throws CursoNotFoundException, CursoExistsException, TemaNotFoundException, TemaExistsException, RecursoNotFoundException, RecursoExistsException {
+	public Recurso addNewRecurso(String nombreCurso, String tituloTema, String nombre, String tipo, String contenido) throws CursoNotFoundException, CursoExistsException, TemaNotFoundException, TemaExistsException, RecursoNotFoundException, RecursoExistsException, UtilityException {
 		validateNewNombre(nombreCurso,tituloTema,EMPTY,nombre);
 		Curso curso = cursoRepository.findCursoByNombre(nombreCurso);
 		Tema tema = temaRepository.findTemaByTitulo(tituloTema);
@@ -101,9 +100,21 @@ public class RecursoServiceImpl implements RecursoService{
 			if(tema!=null) {
 				recurso = new Recurso();
 				recurso.setTema(tema);
-				recurso.setTipo(tipo);
-				recurso.setContenido(contenido);
-				recurso.setNombre(nombre);
+
+				if(tipo!=null && !tipo.isEmpty())
+					recurso.setTipo(tipo);
+				else
+					throw new UtilityException(RECURSO_HAS_NO_TIPO);
+
+				if(contenido!=null && !contenido.isEmpty())
+					recurso.setContenido(contenido);
+				else
+					throw new UtilityException(RECURSO_HAS_NO_CONTENIDO);
+
+				if(nombre!=null && !nombre.isEmpty())
+					recurso.setNombre(nombre);
+				else
+					throw new UtilityException(RECURSO_HAS_NO_TITLE);
 		        recursoRepository.save(recurso);
 			}else {
 				throw new TemaNotFoundException(NO_TEMA_FOUND_BY_TITULO + tituloTema);

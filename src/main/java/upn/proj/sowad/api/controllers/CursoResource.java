@@ -77,13 +77,13 @@ public class CursoResource {
     }
 	
 	@GetMapping("/find/{nombre}")
-    public ResponseEntity<Curso> getUser(@PathVariable("nombre") String nombre) {
+    public ResponseEntity<Curso> getUser(@PathVariable("nombre") String nombre) throws UtilityException {
         Curso curso = cursoService.findCursoByNombre(nombre);
         return new ResponseEntity<>(curso, OK);
     }
 	
 	@PostMapping("/addCurso")
-	    public ResponseEntity<Curso> register(@RequestBody Curso curso) throws UserNotFoundException, UsernameExistException, EmailExistException, MessagingException, CursoNotFoundException, CursoExistsException {
+	    public ResponseEntity<Curso> register(@RequestBody Curso curso) throws UserNotFoundException, UsernameExistException, EmailExistException, MessagingException, CursoNotFoundException, CursoExistsException, UtilityException {
 	        Curso newCurso = cursoService.register(curso.getNombre());
 	        return new ResponseEntity<>(newCurso, OK);
 	    }
@@ -91,7 +91,7 @@ public class CursoResource {
 	@PostMapping("/add")
     public ResponseEntity<Curso> addNewCurso(@RequestParam("nombre") String nombre,
                                             @RequestParam("idUser")String idUser)
-                                            throws CursoNotFoundException, CursoExistsException {
+            throws CursoNotFoundException, CursoExistsException, UtilityException {
         Curso newCurso = cursoService.addNewCurso(nombre,idUser);
         return new ResponseEntity<>(newCurso, OK);
     }
@@ -100,14 +100,14 @@ public class CursoResource {
     public ResponseEntity<Curso> update(@RequestParam("currentNombre") String currentNombre,
                                        @RequestParam("nombre") String nombre,
                                        @RequestParam("idUser")String idUser)
-                                        throws CursoNotFoundException, CursoExistsException {
+            throws CursoNotFoundException, CursoExistsException, UtilityException {
         Curso updatedCurso = cursoService.updateCurso(currentNombre, nombre,idUser);
         return new ResponseEntity<>(updatedCurso, OK);
     }
 	
 	
 	@DeleteMapping("/delete/{nombre}")
-    public ResponseEntity<HttpResponse> deleteCurso(@PathVariable("nombre") String nombre) {
+    public ResponseEntity<HttpResponse> deleteCurso(@PathVariable("nombre") String nombre) throws UtilityException {
         cursoService.deleteCurso(nombre);
         return response(OK, CURSO_DELETED_SUCCESSFULLY);
     }

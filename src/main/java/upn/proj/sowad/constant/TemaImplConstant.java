@@ -9,4 +9,6 @@ public class TemaImplConstant {
 
     public static final String TEMA_NOT_ENTERED = "Ingrese tema.";
     public static final String ID_TEMA_IS_NOT_A_NUMBER = "Tema inválido.";
+
+    public static final String TEMA_HAS_NO_TITLE = "Ingrese tema.";
 }

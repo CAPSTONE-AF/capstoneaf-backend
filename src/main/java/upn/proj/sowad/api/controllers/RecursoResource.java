@@ -22,13 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 import upn.proj.sowad.entities.HttpResponse;
 import upn.proj.sowad.entities.Recurso;
 import upn.proj.sowad.entities.Recurso;
-import upn.proj.sowad.exception.domain.CursoExistsException;
-import upn.proj.sowad.exception.domain.CursoNotFoundException;
-import upn.proj.sowad.exception.domain.NotAnImageFileException;
-import upn.proj.sowad.exception.domain.RecursoExistsException;
-import upn.proj.sowad.exception.domain.RecursoNotFoundException;
-import upn.proj.sowad.exception.domain.TemaExistsException;
-import upn.proj.sowad.exception.domain.TemaNotFoundException;
+import upn.proj.sowad.exception.domain.*;
 import upn.proj.sowad.services.RecursoService;
 
 @CrossOrigin("http://localhost:4200")
@@ -48,7 +42,7 @@ public class RecursoResource {
 
 	@GetMapping("/list/{nombreCurso}/{tituloTema}")
     public ResponseEntity<List<Recurso>> getAllRecursos(@PathVariable("nombreCurso") String nombreCurso,
-    		@PathVariable("tituloTema") String tituloTema) throws CursoNotFoundException, CursoExistsException, TemaNotFoundException {
+    		@PathVariable("tituloTema") String tituloTema) throws CursoNotFoundException, CursoExistsException, TemaNotFoundException, UtilityException {
         List<Recurso> Recursos = recursoService.getRecursos(nombreCurso,tituloTema);
         return new ResponseEntity<>(Recursos, OK);
     }
@@ -59,7 +53,7 @@ public class RecursoResource {
     		@RequestParam("tituloTema") String tituloTema,
     		@RequestParam("nombre") String nombre,
     		@RequestParam("tipo") String tipo,
-    		@RequestParam("contenido") String contenido) throws IOException, NotAnImageFileException, CursoNotFoundException, CursoExistsException, RecursoNotFoundException, RecursoExistsException, TemaNotFoundException, TemaExistsException {
+    		@RequestParam("contenido") String contenido) throws IOException, NotAnImageFileException, CursoNotFoundException, CursoExistsException, RecursoNotFoundException, RecursoExistsException, TemaNotFoundException, TemaExistsException, UtilityException {
         Recurso newRecurso = recursoService.addNewRecurso(nombreCurso,tituloTema,nombre,tipo,contenido);
         return new ResponseEntity<>(newRecurso, OK);
     }
