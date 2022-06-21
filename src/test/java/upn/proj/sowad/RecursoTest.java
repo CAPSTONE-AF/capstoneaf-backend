@@ -35,7 +35,7 @@ public class RecursoTest {
         String expectedMessage = CURSO_HAS_NO_TITLE;
         String realMessage = "";
         try {
-            this.recursoService.getRecursos("", "");
+            this.recursoService.getRecursos("", "verbos");
         } catch (TemaNotFoundException | CursoNotFoundException | UtilityException e) {
             realMessage = e.getMessage();
         }
@@ -52,7 +52,7 @@ public class RecursoTest {
             if (this.cursoService.findCursoByNombre(nombreCursoTest) != null)
                 this.cursoService.deleteCurso(nombreCursoTest);
 
-            this.recursoService.addNewRecurso(nombreCursoTest, "", "", "", "");
+            this.recursoService.addNewRecurso(nombreCursoTest, "fotosintesis", "flor", "txt", "bien");
         } catch (TemaNotFoundException | CursoNotFoundException | CursoExistsException | TemaExistsException | RecursoNotFoundException | RecursoExistsException | UtilityException e) {
             realMessage = e.getMessage();
         }
@@ -62,7 +62,7 @@ public class RecursoTest {
 
     @Test
     public void registerRecurso_whenTemaTitleDoesNotExist() {
-        String nombreCursoTest = "unknownCurso";
+        String nombreCursoTest = "ciencia1";
         String nombreTemaTest = "unknownTema";
         String expectedMessage = NO_TEMA_FOUND_BY_TITULO + nombreTemaTest;
         String realMessage = "";
@@ -76,7 +76,7 @@ public class RecursoTest {
             if (this.temaService.findTemaByTitulo(nombreCursoTest, nombreTemaTest) != null)
                 this.temaService.deleteTema(nombreCursoTest, nombreTemaTest);
 
-            this.recursoService.addNewRecurso(nombreCursoTest, nombreTemaTest, "", "", "");
+            this.recursoService.addNewRecurso(nombreCursoTest, nombreTemaTest, "flores", "txt", "bien");
         } catch (TemaNotFoundException | CursoNotFoundException | CursoExistsException | TemaExistsException | RecursoNotFoundException | RecursoExistsException | UtilityException | IOException e) {
             realMessage = e.getMessage();
         }
@@ -232,9 +232,9 @@ public class RecursoTest {
 
     @Test
     public void deleteRecurso_whenTitleNotExist() {
-        String nombreCursoTest = "matematicasss";
-        String nombreTemaTest = "sumas";
-        String nombreRecursoTest = "mate";
+        String nombreCursoTest = "personal";
+        String nombreTemaTest = "psicologia";
+        String nombreRecursoTest = "uno";
         String expectedMessage = NO_RECURSO_FOUND_BY_NOMBRE;
         String realMessage = "";
 

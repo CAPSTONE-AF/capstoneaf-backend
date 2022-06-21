@@ -30,14 +30,13 @@ public class QuizTest {
 
     @Test
     public void registerExamen_whenTemaDoesNotExist() {
-        String nombreCursoTest = "matematicasss";
         String expectedMessage = TEMA_NOT_FOUND;
         String realMessage = "";
         try {
             QuizDto quizDto = new QuizDto();
 
-            quizDto.setTitle("Examen 1");
-            quizDto.setDescription("Unit Test");
+            quizDto.setTitle("nuevo");
+            quizDto.setDescription("examen1");
 
             quizDto.setIdTema("999999999"); //este idTema no existe
 

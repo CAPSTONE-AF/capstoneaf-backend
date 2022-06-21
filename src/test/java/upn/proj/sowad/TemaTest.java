@@ -23,7 +23,7 @@ public class TemaTest {
         String expectedMessage = TemaImplConstant.TEMA_HAS_NO_TITLE;
         String realMessage = "";
         try {
-            this.temaService.addNewTema("","","","1");
+            this.temaService.addNewTema("matematica","","http//www.jcciicci.com","1");
         } catch (UtilityException | IOException | NotAnImageFileException | CursoNotFoundException | CursoExistsException | TemaNotFoundException | TemaExistsException e) {
             realMessage = e.getMessage();
         }
@@ -35,7 +35,7 @@ public class TemaTest {
         String expectedMessage = TemaImplConstant.TEMA_HAS_NO_TITLE;
         String realMessage = "";
         try {
-            this.temaService.updateTema("","","","","1");
+            this.temaService.updateTema("matematica","","Multiplicaciones","http//www.jcciicci.com","1");
         } catch (CursoExistsException | CursoNotFoundException | UtilityException | TemaNotFoundException | TemaExistsException | IOException | NotAnImageFileException e) {
             realMessage = e.getMessage();
         }
@@ -48,7 +48,7 @@ public class TemaTest {
         String expectedMessage = TemaImplConstant.TEMA_HAS_NO_TITLE;
         String realMessage = "";
         try {
-            this.temaService.deleteTema("","");
+            this.temaService.deleteTema("Social","");
         } catch (UtilityException | IOException | CursoNotFoundException | CursoExistsException | TemaNotFoundException e) {
             realMessage = e.getMessage();
         }

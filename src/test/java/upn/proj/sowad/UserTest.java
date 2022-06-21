@@ -50,10 +50,10 @@ public class UserTest {
         String expectedMessage = EMAIL_ALREADY_EXISTS;
         String realMessage = "";
         try {
-            if(this.userService.findUserByUsername("johndoe")!=null)
-                this.userService.deleteUser("johndoe");
-            this.userService.register("John", "Doe", "johndoe", "johndoe@gmail.com", "johndoe", null);
-            this.userService.register("Ben", "Walmart", "benwalmart", "johndoe@gmail.com", "benwalmart", null);
+            if(this.userService.findUserByUsername("Garcisama")!=null)
+                this.userService.deleteUser("Garcisama");
+            this.userService.register("Maria", "Garcia", "Garcisama", "arcisama@gmail.com", "12345ma", null);
+            this.userService.register("Luis", "Vega", "jvegais", "arcisama@gmail.com", "vegas", null);
         } catch (UsernameExistException | UserNotFoundException | EmailExistException | MessagingException | IOException e) {
             realMessage = e.getMessage();
         }
