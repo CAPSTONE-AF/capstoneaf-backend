@@ -42,11 +42,40 @@ public class QuizTest {
 
             this.quizService.registerNewQuiz(quizDto);
 
-        } catch ( UtilityException e) {
+        } catch (UtilityException e) {
             realMessage = e.getMessage();
         }
-
-
         assertEquals(expectedMessage, realMessage);
     }
-}
+        @Test
+        public void registerExamen_whenTitleDoesNotExist() throws UtilityException, CursoExistsException, CursoNotFoundException, TemaNotFoundException, TemaExistsException, IOException, NotAnImageFileException {
+            String nombreCursoTest = "unknownCurso";
+            String nombreTemaTest = "unknownTema";
+            if (this.cursoService.findCursoByNombre(nombreCursoTest) == null)
+                this.cursoService.addNewCurso(nombreCursoTest, "1");
+            if (this.temaService.findTemaByTitulo(nombreCursoTest, nombreTemaTest) == null)
+                this.temaService.addNewTema(nombreCursoTest, nombreTemaTest, "", "1");
+            QuizDto quizDto = new QuizDto();
+            quizDto.setTitle("");
+            quizDto.setDescription("examen1");
+            quizDto.setIdTema(this.temaService.findTemaByTitulo(nombreCursoTest, nombreTemaTest).getIdTema().toString());
+
+            //String expectedMessage = CURSO_HAS_NO_TITLE;
+           //String realMessage = "";
+            //try {
+              //  QuizDto quizDto = new QuizDto();
+                //quizDto.setTitle("");
+                //this.quizService.registerNewQuiz(quizDto);
+
+            //} catch ( UtilityException e) {
+              //  realMessage = e.getMessage();
+           // }
+          //  assertEquals(expectedMessage, realMessage);
+
+        }
+    }
+
+
+
+
+
