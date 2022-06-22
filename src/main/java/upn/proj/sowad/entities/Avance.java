@@ -24,6 +24,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Avance {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)

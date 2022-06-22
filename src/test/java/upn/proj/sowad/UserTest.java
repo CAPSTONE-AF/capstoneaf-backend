@@ -11,6 +11,7 @@ import upn.proj.sowad.entities.User;
 import upn.proj.sowad.exception.domain.EmailExistException;
 import upn.proj.sowad.exception.domain.UserNotFoundException;
 import upn.proj.sowad.exception.domain.UsernameExistException;
+import upn.proj.sowad.exception.domain.UtilityException;
 import upn.proj.sowad.services.UserService;
 
 import javax.mail.MessagingException;
@@ -41,7 +42,11 @@ public class UserTest {
         } catch (UsernameExistException | UserNotFoundException | EmailExistException | MessagingException | IOException e) {
             realMessage = e.getMessage();
         }
-
+        try {
+            this.userService.deleteUser("johndoe");
+        } catch (IOException e) {
+            e.getMessage();
+        }
         assertEquals(expectedMessage,realMessage);
     }
 
@@ -57,7 +62,11 @@ public class UserTest {
         } catch (UsernameExistException | UserNotFoundException | EmailExistException | MessagingException | IOException e) {
             realMessage = e.getMessage();
         }
-
+        try {
+            this.userService.deleteUser("Garcisama");
+        } catch (IOException e) {
+            e.getMessage();
+        }
         assertEquals(expectedMessage,realMessage);
     }
 
@@ -75,6 +84,11 @@ public class UserTest {
             this.userService.deleteUser("johndoe");
         savedUser = this.userService.register(userNotSaved.getFirstName(),
                 userNotSaved.getLastName(), userNotSaved.getUsername(), userNotSaved.getEmail(), userNotSaved.getPassword(), null);
+        try {
+            this.userService.deleteUser("johndoe");
+        } catch (IOException e) {
+            e.getMessage();
+        }
         assertNotEquals(userNotSaved.getPassword(),savedUser.getPassword());
     }
 
