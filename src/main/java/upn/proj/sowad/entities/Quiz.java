@@ -35,8 +35,7 @@ public class Quiz {
     @Column(name = "nume_ques")
     private Integer numberOfQuestions;
 
-    @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST},
-            fetch = FetchType.LAZY)
+    @ManyToOne
     @JsonIgnore
     private Tema tema;
 

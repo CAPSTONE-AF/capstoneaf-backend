@@ -43,9 +43,7 @@ public class Question {
     private String answer; // OP1 | OP2 | OP3 | OP4
 
 
-    @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST},
-            fetch = FetchType.LAZY)
-    @JoinColumn(name="id_quiz")
+    @ManyToOne
     @JsonIgnore
     private Quiz quiz;
 

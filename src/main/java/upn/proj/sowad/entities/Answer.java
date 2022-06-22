@@ -22,15 +22,11 @@ public class Answer {
     @Column(name = "ans")
     private String ans;
 
-    @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST},
-            fetch = FetchType.LAZY)
-    @JoinColumn(name="id_resul")
+    @ManyToOne
     @JsonIgnore
     private Result result;
 
-    @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST},
-            fetch = FetchType.LAZY)
-    @JoinColumn(name="id_ques")
+    @ManyToOne
     @JsonIgnore
     private Question question;
 }

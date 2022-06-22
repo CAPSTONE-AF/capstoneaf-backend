@@ -21,14 +21,12 @@ public class Result {
     @Column(name = "id_resul")
     private Long idResultado;
 
-    @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST},
-            fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name="id_quiz")
     @JsonIgnore
     private Quiz quiz;
 
-    @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST},
-            fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name="id")
     @JsonIgnore
     private User user;

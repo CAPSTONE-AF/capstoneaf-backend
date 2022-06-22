@@ -50,8 +50,7 @@ public class Tema {
 	@JsonIgnore
 	private List<Quiz> quizzes;
 
-	@ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST},
-			fetch = FetchType.LAZY)
+	@ManyToOne
 	@JoinColumn(name="id_curso")
 	@JsonIgnore
 	private Curso curso;

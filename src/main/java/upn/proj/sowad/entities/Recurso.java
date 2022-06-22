@@ -43,8 +43,7 @@ public class Recurso {
     @Column(name = "fec_modi")
     private Date fechaModificacion;
 
-    @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST},
-            fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "id_tema")
     @JsonIgnore
     private Tema tema;

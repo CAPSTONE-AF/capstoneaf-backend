@@ -23,10 +23,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import javax.transaction.Transactional;
 
@@ -134,6 +131,7 @@ public class TemaServiceImpl implements TemaService {
                 tema.setTitulo(titulo);
                 tema.setCurso(curso);
                 tema.setPortadaUrl("https://i.vimeocdn.com/portrait/1274237_300x300.jpg");
+                tema.setQuizzes(new ArrayList<>());
                 Optional<User> user = this.userRepository.findById(Long.parseLong(idUser));
                 if (user.isPresent()) {
                     tema.setUsu_crear_tema(user.get().getUsername());

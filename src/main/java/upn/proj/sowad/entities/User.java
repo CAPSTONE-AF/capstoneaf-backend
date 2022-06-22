@@ -34,8 +34,7 @@ public class User implements Serializable {
     private boolean isActive;
     private boolean isNotLocked;
 
-    @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST},
-            fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name="id_grado")
     @JsonIgnore
     private Grado grado;
